@@ -1,6 +1,6 @@
 # Waren Event’s
 
-Base de billetterie privée : Next.js App Router, TypeScript, Tailwind CSS et Supabase Auth. Aucun écran métier, paiement, billet ni envoi WhatsApp n’est implémenté.
+Base de billetterie privée : Next.js App Router, TypeScript, Tailwind CSS et Supabase Auth. La page `/admin/evenements` liste les événements et permet leur création avec plusieurs types de billets. Paiement, émission de billets et envoi WhatsApp restent à implémenter.
 
 ## Démarrage
 
@@ -32,7 +32,7 @@ Les variables doivent aussi être configurées sur l’hébergeur avant la compi
 - `/admin/login` : formulaire courriel/mot de passe, erreurs et état de chargement.
 - `/admin` : simple confirmation de connexion et déconnexion locale.
 
-La protection des pages ne remplace pas les politiques RLS de la base. Le schéma SQL n’a pas été fourni : aucune table ni politique existante n’a été modifiée ou validée dans cette étape. Les futures fonctions de billets publics devront contrôler les liens uniques sans ouvrir l’accès aux données administratives.
+La protection des pages ne remplace pas les politiques RLS de la base. Le schéma existant a été inspecté. La migration `admin_event_creation` restreint les trois tables au compte administrateur, active `security_invoker` sur `event_summary` et ajoute une fonction de création transactionnelle. Elle est déjà appliquée au projet Supabase connecté. Pour un autre projet, appliquer d’abord le schéma initial puis adapter l’UUID administrateur dans la migration et `ADMIN_USER_ID` ensemble. Les futures fonctions de billets publics devront contrôler les liens uniques sans ouvrir l’accès aux données administratives.
 
 ## Vérification
 
@@ -48,3 +48,13 @@ Tests automatisés : accès sans session, sous-routes, exception login, rejet no
 Style : blanc, cartes gris clair arrondies, boutons foncés pleine largeur, sans ombres ni dégradés. Classes de statut : `text-green-600`, `text-amber-600`, `text-red-600`.
 
 Références : [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client) et [Next.js Proxy](https://nextjs.org/docs/app/api-reference/file-conventions/proxy).
+
+## Événements
+
+`/admin/evenements` lit `events` et la vue `event_summary` (billets vendus et recettes hors annulations), avec lecture paginée de toutes les lignes. Une erreur de chargement ne présente pas des totaux artificiellement nuls.
+
+Le formulaire accepte un titre, une date/heure locale, un lieu et 1 à 50 types de billets : nom unique, prix positif ou nul à deux décimales, quantité entière strictement positive. La date est enregistrée en UTC et affichée dans le fuseau de l’appareil. Le schéma ne définit aucune devise : les prix et recettes sont affichés sans symbole monétaire.
+
+La Server Action vérifie l’administrateur et les champs, puis appelle `create_event_with_ticket_types` avec la session utilisateur. Cette fonction SECURITY INVOKER respecte les règles RLS et enregistre l’événement et tous ses types dans une même transaction. Aucun secret service_role n’est utilisé.
+
+Validation effectuée : 22 tests automatisés, lint et compilation. Test SQL transactionnel annulé : création de deux types, totaux initiaux nuls, exclusion d’un billet annulé, retour arrière sur un type invalide, refus de lecture et de création pour un autre utilisateur. Les tests ne conservent pas de données. Le parcours navigateur avec le vrai compte reste à essayer.
