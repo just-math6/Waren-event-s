@@ -1,6 +1,6 @@
 # Waren Event’s
 
-Base de billetterie privée : Next.js App Router, TypeScript, Tailwind CSS et Supabase Auth. La page `/admin/evenements` liste les événements et permet leur création avec plusieurs types de billets. La vente présentielle et le partage du lien WhatsApp sont disponibles ; la consultation publique et le téléchargement du billet restent à implémenter.
+Base de billetterie privée : Next.js App Router, TypeScript, Tailwind CSS et Supabase Auth. La page `/admin/evenements` liste les événements et permet leur création avec plusieurs types de billets. La vente présentielle et le partage du lien WhatsApp sont disponibles ; la consultation publique et le téléchargement PNG du billet sont disponibles.
 
 ## Démarrage
 
@@ -69,6 +69,19 @@ Le contrôle du téléphone est temporisé de 350 ms et recherche uniquement les
 
 Chaque formulaire utilise un token cryptographiquement aléatoire de 32 octets. La contrainte unique et la recherche du token permettent de reprendre la même vente après une réponse perdue sans réinsérer le billet. Après confirmation, le lien utilise le domaine courant en HTTPS (HTTP autorisé pour localhost), avec copie et ouverture de WhatsApp au numéro international normalisé. L’envoi du message reste manuel dans WhatsApp.
 
-La route publique `/billet/[token]` et le téléchargement du billet restent à implémenter : cette étape crée la vente et son lien. Le déploiement doit utiliser le domaine public final avant de partager les liens aux acheteurs.
+La route publique `/billet/[token]` affiche le billet et permet son téléchargement PNG. Le déploiement doit utiliser le domaine public final avant de partager les liens aux acheteurs.
 
 Validation de cette étape : 31 tests automatisés, lint, TypeScript et compilation réussis. Le test SQL sous le rôle authentifié a confirmé l’insertion et le refus d’un billet au-delà du quota, puis a annulé les données. Le parcours complet avec le vrai compte administrateur reste à essayer dans un navigateur.
+
+
+## Billet public
+
+`/billet/[token]` fonctionne sans compte et sans session administrateur. La page affiche le type, l’événement, la date dans le fuseau de l’appareil, le lieu, le statut, le QR code et les coordonnées de l’acheteur. Le QR code `qrcode` contient uniquement le token. Les anciens tokens hexadécimaux de 32 caractères et les nouveaux de 64 caractères sont acceptés. Un lien inconnu affiche « Billet introuvable » avec HTTP 404. Une panne du service affiche une erreur distincte avec possibilité de réessayer.
+
+Le statut `valide` donne un badge vert, `utilise` un badge gris « Déjà utilisé » et `annule` un badge rouge « Annulé ». La consultation ne modifie jamais le statut. Le bouton utilise `html-to-image` pour exporter la carte seule en PNG à résolution doublée, avec le QR et les coordonnées ; le bouton lui-même est exclu de l’image.
+
+La migration `public_ticket_lookup` est appliquée au projet connecté. Elle conserve les RLS administrateur et ajoute une fonction publique `SECURITY INVOKER` qui appelle une fonction de lecture limitée dans le schéma non exposé `ticket_private`. Cette fonction interne `SECURITY DEFINER`, au `search_path` vide, utilise le token exact comme autorisation et ne renvoie que les sept champs nécessaires au billet. Elle ne permet ni recherche partielle, ni liste, ni écriture. Aucune clé privilégiée n’est utilisée dans l’application. Les pages désactivent le cache, l’indexation et la transmission du référent.
+
+Vérification : 36 tests, lint, TypeScript et compilation réussis. Contrôles HTTP anonymes : billet connu 200, tokens inconnu ou mal formé 404, QR PNG présent et en-têtes de confidentialité. Tests SQL : lecture avec token exact, statuts utilisé/annulé, rejet des tokens invalides et absence d’accès anonyme à la liste des billets. Les données de démonstration ont été supprimées. L’aperçu local est bloqué dans le navigateur de cet environnement : le rendu visuel et le téléchargement PNG restent à vérifier dans un navigateur accessible après déploiement.
+
+Les advisors ne signalent pas d’alerte sur les nouvelles fonctions. Deux avertissements préexistants restent hors de cette modification : [search_path du trigger de quota](https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable) et [protection contre les mots de passe compromis](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
