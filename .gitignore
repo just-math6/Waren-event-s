@@ -5,3 +5,10 @@ out/
 !.env.example
 *.tsbuildinfo
 coverage/
+
+dist/
+.wrangler/
+.sites-runtime/
+supabase/.temp/
+
+.dev.vars*
