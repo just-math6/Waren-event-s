@@ -88,4 +88,14 @@ Les advisors ne signalent pas d’alerte sur les nouvelles fonctions. Deux avert
 
 ## Hébergement Sites
 
-La compilation `npm run build` produit désormais la version compatible avec l’hébergement Sites via Vinext, tout en conservant les routes App Router et les composants existants. `npm run build:next` puis `npm start` restent disponibles pour un hébergement Node.js classique. Les variables Supabase et `ADMIN_USER_ID` sont configurées dans l’environnement d’hébergement ; aucune clé privilégiée n’est embarquée. La page de connexion et les billets par token sont publics ; les routes d’administration et les écritures restent réservées à l’administrateur Supabase.
+`npm run build` produit la version Next.js pour Vercel ou Node.js ; `npm run build:worker` conserve la compilation Sites via Vinext. Configurer `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` et `ADMIN_USER_ID` dans l’environnement de déploiement. La configuration Vercel et le déploiement restent à vérifier ; aucun secret ne doit être ajouté au dépôt.
+
+## Contrôle des entrées
+
+Depuis un événement, ouvrir « Contrôle entrée » (`/admin/evenements/[id]/scan`). Autoriser la caméra sur HTTPS, ou chercher un acheteur par nom/téléphone. La migration `atomic_ticket_checkin` ajoute une fonction réservée à l’administrateur, avec verrouillage de la ligne : seul le premier scan passe le billet à `utilise`. Le renvoi du même identifiant de requête est idempotent et ne modifie pas `used_at`.
+
+Le cache IndexedDB est séparé par compte administrateur et événement. Il contient les noms, téléphones, tokens, statuts et la file d’attente : utiliser un appareil de confiance. Une transaction locale doit réussir avant toute autorisation. La file persiste après fermeture de la page et sera synchronisée à la prochaine ouverture en ligne avec le même compte. Ne pas effacer les données du navigateur avant synchronisation.
+
+Pour scanner hors connexion, ouvrir la page en ligne et attendre la préparation du cache, puis la garder ouverte. Le rechargement complet hors connexion n’est pas pris en charge. Caméra et recherche restent utilisables sans réseau. Les compteurs incluent les validations locales en attente ; les billets annulés sont exclus du total vendu. Realtime, le retour de connexion et une vérification périodique relancent la synchronisation. Les conflits restent visibles sur l’appareil.
+
+Deux appareils déconnectés peuvent accepter le même billet ; les annulations et nouvelles ventes postérieures au cache ne sont pas connues hors connexion. La première validation reçue par Supabase est conservée, sans écrasement par les suivantes. Les essais caméra physique et deux appareils restent à réaliser après déploiement.
