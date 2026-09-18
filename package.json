@@ -4,12 +4,12 @@
   "description": "Base de billetterie privée Waren Events",
   "scripts": {
     "dev": "next dev",
-    "build": "vite build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "build:next": "next build"
+    "build:worker": "vite build"
   },
   "repository": {
     "type": "git",
