@@ -15,3 +15,11 @@
  .paper-grid { display: grid; grid-template-columns: 1fr 1fr; }
  .paper-card { min-height: 74mm; }
 }
+
+.football-sheet { display: grid; gap: 1rem; }
+.football-ticket { position: relative; width: 100%; break-inside: avoid; }
+@media print {
+  main:has(.football-sheet) { display: block; max-width: none; padding: 0; }
+  .football-sheet { display: block; }
+  .football-ticket { width: min(170mm, 100%); margin: 0 auto 4mm; }
+}
