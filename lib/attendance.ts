@@ -26,6 +26,6 @@ export function matchesBuyer(ticket: AttendanceTicket, query: string) {
   const search = normalize(query);
   const digits = search.replace(/\D/g, '');
   return !search || normalize(ticket.buyer_name).includes(search)
-    || ticket.buyer_phone.includes(search)
-    || (digits.length > 0 && /^[+\d\s().-]+$/.test(search) && ticket.buyer_phone.replace(/\D/g, '').includes(digits));
+    || (ticket.buyer_phone ?? '').includes(search)
+    || (digits.length > 0 && /^[+\d\s().-]+$/.test(search) && (ticket.buyer_phone ?? '').replace(/\D/g, '').includes(digits));
 }

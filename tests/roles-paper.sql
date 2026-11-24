@@ -1,0 +1,30 @@
+begin;
+do $test$
+declare admin uuid:='d04b977b-cf36-43ec-b202-25b785312ac5'; staff uuid:=gen_random_uuid(); ev uuid; typ uuid; lot uuid; a text; b text; req uuid:=gen_random_uuid(); duplicate_result jsonb;
+begin
+ perform set_config('request.jwt.claim.sub',admin::text,true);
+ insert into auth.users (id,email,email_confirmed_at,is_anonymous) values (staff,'fixture-'||staff||'@example.invalid',now(),false);
+ perform public.waren_assign('fixture-'||staff||'@example.invalid','vente');
+ ev:=public.create_event_with_ticket_types('Fixture papier','Test',now(),'[{"name":"Standard","price":"12.50","quantity_total":"3"}]');
+ select id into typ from public.ticket_types where event_id=ev;
+ lot:=public.waren_print(typ,3);
+ select min(code),max(code) into a,b from public.paper_stock where batch=lot;
+ assert public.waren_gate(ev,a)->>'outcome'='pret';
+ perform set_config('request.jwt.claim.sub',staff::text,true);
+ assert public.waren_role()='vente';
+ begin perform public.waren_gate(ev,a); raise exception 'gate allowed'; exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
+ begin perform public.waren_assign('fixture-'||staff||'@example.invalid','entree');raise exception 'role escalation';exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
+ assert public.waren_sell(ev,array[a,b],req)=2;
+ assert public.waren_sell(ev,array[a,b],req)=2;
+ perform set_config('request.jwt.claim.sub',admin::text,true);
+ assert (select recettes_totales=25 and billets_vendus=2 from public.event_summary where event_id=ev);
+ perform public.waren_block(lot);assert (select count(*)=1 from public.paper_stock where batch=lot and state='bloque');
+ perform public.waren_assign('fixture-'||staff||'@example.invalid','entree');
+ perform set_config('request.jwt.claim.sub',staff::text,true);
+ assert public.waren_gate(ev,a)->>'outcome'='accepted';
+ duplicate_result:=public.waren_gate(ev,a);assert duplicate_result->>'outcome'='utilise' and duplicate_result->>'at' is not null;
+ begin perform public.waren_sell(ev,array[a],req);raise exception 'sale allowed';exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
+ delete from public.ticket_staff where user_id=staff;
+ assert public.waren_role() is null;
+end $test$;
+rollback;

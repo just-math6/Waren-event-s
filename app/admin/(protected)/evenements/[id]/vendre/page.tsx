@@ -22,8 +22,9 @@ export default async function SellPage({ params }: { params: Promise<{ id: strin
     if (error) { failed = true; break; }
     const counted = await Promise.all(data.map(async type => {
       const { count, error } = await supabase.from('tickets').select('id', { count: 'exact', head: true }).eq('ticket_type_id', type.id).neq('status', 'annule');
-      if (error || count === null) return null;
-      return { id: type.id, name: type.name, price: Number(type.price), remaining: Math.max(0, type.quantity_total - count) };
+      const reserved = await supabase.from('paper_stock').select('code', { count: 'exact', head: true }).eq('type_id',type.id).eq('state','pret');
+      if (error || count === null || reserved.error || reserved.count === null) return null;
+      return { id: type.id, name: type.name, price: Number(type.price), remaining: Math.max(0, type.quantity_total - count - reserved.count) };
     }));
     if (counted.some(type => type === null)) failed = true;
     types.push(...counted.filter((type): type is TicketType => type !== null));

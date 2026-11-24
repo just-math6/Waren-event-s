@@ -12,7 +12,7 @@ export async function checkPhone(eventId: string, phone: string): Promise<{ exis
   for (let offset = 0; ; offset += 500) {
     const { data, error } = await supabase.from('tickets').select('buyer_phone').eq('event_id', eventId).eq('status', 'valide').order('id').range(offset, offset + 499);
     if (error) return { error: 'Vérification des doublons indisponible.' };
-    if (data.some(row => normalizePhone(row.buyer_phone) === normalizePhone(phone))) return { exists: true };
+    if (data.some(row => normalizePhone(row.buyer_phone ?? '') === normalizePhone(phone))) return { exists: true };
     if (data.length < 500) return { exists: false };
   }
 }

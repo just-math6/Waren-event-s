@@ -35,10 +35,10 @@ export default function TicketCard({ ticket, qrCode }: { ticket: PublicTicket; q
       </header>
       <div className="border-t border-dashed border-gray-300" />
       <div className="flex justify-center"><Image src={qrCode} alt="QR code du billet à présenter à l’entrée" width={256} height={256} unoptimized priority className="h-auto max-w-full rounded-lg" /></div>
-      <dl className="space-y-4">
+      {ticket.buyer_phone ? <dl className="space-y-4">
         <div><dt className="text-sm text-gray-500">Nom de l’acheteur</dt><dd className="mt-1 break-words text-lg font-semibold">{ticket.buyer_name}</dd></div>
         <div><dt className="text-sm text-gray-500">Numéro de téléphone</dt><dd className="mt-1 break-words text-lg font-medium">{ticket.buyer_phone}</dd></div>
-      </dl>
+      </dl> : <p>{ticket.buyer_name}</p>}
       <div className="border-t border-dashed border-gray-300" />
     </article>
     <button type="button" className="button" onClick={download} disabled={pending}>{pending ? 'Téléchargement…' : 'Télécharger le billet'}</button>

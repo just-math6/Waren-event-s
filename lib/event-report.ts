@@ -51,7 +51,7 @@ export function reportCsv(types: ReportType[], tickets: ReportTicket[]) {
   const names = new Map(types.map(type => [type.id, type.name]));
   const rows = [['Nom', 'Téléphone', 'Type', 'Prix payé', 'Statut'].map(csvText).join(';')];
   for (const ticket of tickets) rows.push([
-    csvText(ticket.buyer_name), csvText(ticket.buyer_phone), csvText(names.get(ticket.ticket_type_id) ?? 'Type indisponible'),
+    csvText(ticket.buyer_name), csvText(ticket.buyer_phone ?? ''), csvText(names.get(ticket.ticket_type_id) ?? 'Type indisponible'),
     csvText(Number(ticket.price_paid).toFixed(2).replace('.', ',')), csvText(ticket.status),
   ].join(';'));
   return '\uFEFF' + rows.join('\r\n') + '\r\n';
