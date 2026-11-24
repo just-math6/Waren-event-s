@@ -1,0 +1,43 @@
+-- Fresh identities and events only; roll back the whole scenario.
+begin;
+do $test$
+declare owner_id uuid:='d04b977b-cf36-43ec-b202-25b785312ac5';
+ coord uuid:=gen_random_uuid(); worker uuid:=gen_random_uuid(); mail text:=coord||'@example.invalid'; worker_mail text:=worker||'@example.invalid';
+ mine uuid; other_ev uuid; my_type uuid; other_type uuid; batch_id uuid; code text; report jsonb;
+begin
+ insert into auth.users(id,email,email_confirmed_at,is_anonymous) values(coord,mail,now(),false),(worker,worker_mail,now(),false);
+ perform set_config('request.jwt.claim.sub',owner_id::text,true);
+ mine:=public.create_event_with_ticket_types('Coord test','Test',now(),'[{"name":"VIP","price":"1500","quantity_total":"5"}]');
+ other_ev:=public.create_event_with_ticket_types('Other test','Test',now(),'[{"name":"VIP","price":"1500","quantity_total":"5"}]');
+ select id into my_type from public.ticket_types where event_id=mine;
+ select id into other_type from public.ticket_types where event_id=other_ev;
+ batch_id:=public.waren_print(my_type,2);
+ select min(s.code) into code from public.paper_stock s where s.batch=batch_id;
+ perform public.waren_name_coordinator(mine,mail);
+ begin perform public.waren_name_coordinator(mine,worker_mail);raise exception 'second coordinator';exception when unique_violation then null;end;
+ perform set_config('request.jwt.claim.sub',coord::text,true);
+ assert (select count(*)=1 from public.waren_my_assignments());
+ assert public.waren_role() is null;
+ perform public.waren_coord_quantity(mine,my_type,4);
+ begin perform public.waren_coord_quantity(mine,my_type,1);raise exception 'unexpected quota';exception when others then if sqlerrm not like 'La quantité doit couvrir%' then raise;end if;end;
+ begin perform public.waren_coord_dashboard(other_ev); raise exception 'cross-event read'; exception when insufficient_privilege then null; end;
+ begin perform public.waren_coord_team(other_ev,worker_mail,'vente'); raise exception 'cross-event write'; exception when insufficient_privilege then null; end;
+ begin perform public.waren_name_coordinator(other_ev,worker_mail); raise exception 'unauthorized nomination'; exception when insufficient_privilege then null; end;
+ perform public.waren_coord_team(mine,worker_mail,'vente');
+ perform set_config('request.jwt.claim.sub',worker::text,true);
+ begin perform public.waren_quote(other_ev,code);raise exception 'cross-event quote';exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
+ begin perform public.waren_coord_dashboard(mine);raise exception 'staff report';exception when insufficient_privilege then null;end;
+ assert public.waren_sell(mine,array[code],gen_random_uuid())=1;
+ perform set_config('request.jwt.claim.sub',coord::text,true);
+ report:=public.waren_coord_dashboard(mine);
+ assert report->'sales'->0->>'seller'=worker_mail and report->'sales'->0->>'sold'='1';
+ perform public.waren_coord_team(mine,worker_mail,'entree');
+ perform set_config('request.jwt.claim.sub',worker::text,true);
+ begin perform public.waren_gate(other_ev,code);raise exception 'cross-event scan';exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
+ assert public.waren_gate(mine,code)->>'outcome'='accepted';
+ perform set_config('request.jwt.claim.sub',coord::text,true);
+ perform public.waren_coord_team(mine,worker_mail,'retirer');
+ perform set_config('request.jwt.claim.sub',worker::text,true);
+ assert not exists(select 1 from public.waren_my_assignments());
+end $test$;
+rollback;
