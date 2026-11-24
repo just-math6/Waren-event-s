@@ -1,6 +1,6 @@
 begin;
 do $test$
-declare admin uuid:='d04b977b-cf36-43ec-b202-25b785312ac5'; staff uuid:=gen_random_uuid(); ev uuid; typ uuid; lot uuid; a text; b text; req uuid:=gen_random_uuid(); duplicate_result jsonb;
+declare admin uuid:='d04b977b-cf36-43ec-b202-25b785312ac5'; staff uuid:=gen_random_uuid(); ev uuid; typ uuid; lot uuid; a text; b text; req uuid:=gen_random_uuid(); duplicate_result jsonb; first_result jsonb; buyer_token text; seller_email text := 'fixture-'||staff||'@example.invalid'; controller uuid:=gen_random_uuid();
 begin
  perform set_config('request.jwt.claim.sub',admin::text,true);
  insert into auth.users (id,email,email_confirmed_at,is_anonymous) values (staff,'fixture-'||staff||'@example.invalid',now(),false);
@@ -9,7 +9,7 @@ begin
  select id into typ from public.ticket_types where event_id=ev;
  lot:=public.waren_print(typ,3);
  select min(code),max(code) into a,b from public.paper_stock where batch=lot;
- assert public.waren_gate(ev,a)->>'outcome'='pret';
+ assert public.waren_gate(ev,a)=jsonb_build_object('outcome','pret');
  perform set_config('request.jwt.claim.sub',staff::text,true);
  assert public.waren_role()='vente';
  begin perform public.waren_gate(ev,a); raise exception 'gate allowed'; exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
@@ -19,12 +19,20 @@ begin
  perform set_config('request.jwt.claim.sub',admin::text,true);
  assert (select recettes_totales=25 and billets_vendus=2 from public.event_summary where event_id=ev);
  perform public.waren_block(lot);assert (select count(*)=1 from public.paper_stock where batch=lot and state='bloque');
- perform public.waren_assign('fixture-'||staff||'@example.invalid','entree');
- perform set_config('request.jwt.claim.sub',staff::text,true);
- assert public.waren_gate(ev,a)->>'outcome'='accepted';
- duplicate_result:=public.waren_gate(ev,a);assert duplicate_result->>'outcome'='utilise' and duplicate_result->>'at' is not null;
+ insert into auth.users (id,email,email_confirmed_at,is_anonymous) values (controller,'gate-'||controller||'@example.invalid',now(),false);
+ perform public.waren_assign('gate-'||controller||'@example.invalid','entree');
+ select token into buyer_token from public.paper_stock where code=b;
+ first_result:=public.check_in_ticket(ev,buyer_token,req,now());
+ assert first_result->>'outcome'='accepted' and first_result->>'sold_by'=seller_email;
+ duplicate_result:=public.check_in_ticket(ev,buyer_token,gen_random_uuid(),now());
+ assert duplicate_result->>'outcome'='duplicate' and duplicate_result->>'sold_by'=seller_email;
+ perform set_config('request.jwt.claim.sub',controller::text,true);
+ assert public.waren_gate(gen_random_uuid(),a)=jsonb_build_object('outcome','missing');
+ first_result:=public.waren_gate(ev,a);
+ assert first_result->>'outcome'='accepted' and first_result->>'sold_by'=seller_email;
+ duplicate_result:=public.waren_gate(ev,a);assert duplicate_result->>'outcome'='utilise' and duplicate_result->>'at' is not null and duplicate_result->>'sold_by'=seller_email;
  begin perform public.waren_sell(ev,array[a],req);raise exception 'sale allowed';exception when others then if sqlerrm<>'Accès refusé' then raise;end if;end;
- delete from public.ticket_staff where user_id=staff;
+ delete from public.ticket_staff where user_id=controller;
  assert public.waren_role() is null;
 end $test$;
 rollback;

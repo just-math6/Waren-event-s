@@ -3,7 +3,7 @@ import { acknowledgeScan, effectiveTickets, emptyScanCache, reserveScan, scanTok
 
 const token = 'a'.repeat(64);
 const scan = { id: 'request-one', token, scannedAt: '2026-09-18T12:00:00Z' };
-const cache = (): ScanCache => ({ ...emptyScanCache(), cachedAt: '2026-09-18T11:00:00Z', tickets: [{ id: 'ticket-one', token, buyer_name: 'Test', buyer_phone: '+18195550123', status: 'valide', used_at: null }] });
+const cache = (): ScanCache => ({ ...emptyScanCache(), cachedAt: '2026-09-18T11:00:00Z', tickets: [{ id: 'ticket-one', token, buyer_name: 'Test', sold_by: 'Vente 1', buyer_phone: '+18195550123', status: 'valide', used_at: null }] });
 describe('offline check-in', () => {
   it('accepts only exact 32/64 hex tokens', () => {
     expect(scanToken(token)).toBe(token);
@@ -13,9 +13,9 @@ describe('offline check-in', () => {
   });
   it('queues one admission and refuses a second scan locally', () => {
     const first = reserveScan(cache(), scan);
-    expect(first.result).toMatchObject({ outcome: 'accepted', pending: true });
+    expect(first.result).toMatchObject({ outcome: 'accepted', sold_by: 'Vente 1', pending: true });
     const second = reserveScan(first.cache, { ...scan, id: 'second' });
-    expect(second.result).toMatchObject({ outcome: 'duplicate', used_at: scan.scannedAt });
+    expect(second.result).toMatchObject({ outcome: 'duplicate', sold_by: 'Vente 1', used_at: scan.scannedAt });
     expect(second.cache.queue).toHaveLength(1);
     expect(effectiveTickets(second.cache)[0].status).toBe('utilise');
   });

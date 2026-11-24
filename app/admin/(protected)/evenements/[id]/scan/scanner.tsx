@@ -12,6 +12,7 @@ function Result({ result }: { result: ScanResult }) {
   return <div role="status" className={`rounded-xl border p-5 ${color}`}>
     {result.name && <p className="font-semibold">{result.name}</p>}
     <p>{result.outcome === 'accepted' ? 'Entrée autorisée' : result.outcome === 'duplicate' ? `Déjà utilisé — premier scan : ${time(result.used_at)}` : result.outcome === 'cancelled' ? 'Billet annulé — entrée refusée' : 'Billet introuvable'}</p>
+    {result.outcome !== 'missing' && <p className="mt-1 break-words text-sm">Vendu par : {result.sold_by?.trim() || 'Vendeur non renseigné'}</p>}
     {result.pending && <p className="mt-2 text-sm text-amber-600">Validation locale — en attente de synchronisation.</p>}
   </div>;
 }
