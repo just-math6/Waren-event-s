@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import {createClient} from '@/lib/supabase';
@@ -11,5 +12,5 @@ export default function Access(){
  else if(r.data.session)router.refresh();else setMsg('Consultez votre courriel, puis revenez ici pour vous connecter.');}
  catch{setMsg('Service indisponible. Réessayez.');}finally{setBusy(false);}}}>
  <label>Courriel<input name="email" type="email" required className="input" autoComplete="username"/></label><label>Mot de passe<input name="pass" required minLength={signup?8:1} type="password" className="input" autoComplete={signup?'new-password':'current-password'}/></label>
- <button disabled={busy} className="button">{signup?'Créer mon compte':'Me connecter'}</button><button disabled={busy} type="button" className="underline" onClick={()=>{setSignup(!signup);setMsg('')}}>{signup?'J’ai déjà un compte':'Première visite : créer mon compte'}</button><p role="status">{msg}</p></form>
+ <button disabled={busy} className="button">{signup?'Créer mon compte':'Me connecter'}</button><button disabled={busy} type="button" className="underline" onClick={()=>{setSignup(!signup);setMsg('')}}>{signup?'J’ai déjà un compte':'Première visite : créer mon compte'}</button>{!signup&&<Link className="block text-sm underline" href="/equipe/mot-de-passe">Mot de passe oublié ?</Link>}<p role="status">{msg}</p></form>
 }
