@@ -104,3 +104,12 @@ Deux appareils déconnectés peuvent accepter le même billet ; les annulations 
 Dans l’administration, « Gérer les accès » permet d’attribuer ou de retirer les rôles Vendeur et Contrôle entrée aux comptes Supabase dont le courriel a été confirmé. Partager /equipe avec les collaborateurs. L’inscription seule ne donne aucun droit. Pour les confirmations de courriel, renseigner l’URL du site de production dans Supabase Auth. Le seul administrateur reste celui identifié par ADMIN_USER_ID et les politiques SQL.
 
 Depuis un événement, préparer un lot de 1 à 100 billets et imprimer les invendus. À la vente, choisir l’événement, scanner les billets et confirmer le paiement groupé. La réservation du quota intervient à la préparation du lot ; les recettes ne sont comptées qu’au paiement. L’espace équipe fonctionne en ligne : la vente et le premier passage sont validés par la base. Le retrait d’un accès prend effet sur les opérations suivantes. Les anciens billets nominatifs restent utilisables.
+
+
+### Équipe nommée et modes du coordinateur
+
+Depuis **Équipe → Ouvrir mon événement**, le coordinateur approuve un vendeur ou un contrôleur en créant son nom de connexion unique et son mot de passe. La connexion se fait sur `/equipe` sans boîte mail. Les anciens comptes par courriel conservent leur connexion. Un compte créé pour un événement reste limité à cet événement, y compris en cas de changement de rôle. Le coordinateur peut le suspendre, le réactiver ou remplacer son mot de passe. Les mots de passe sont traités par Supabase Auth et ne sont pas stockés dans les tables de billetterie.
+
+Le sélecteur **Coordination / Vente / Contrôle** conserve l’événement et protège le panier ouvert. Avant sa première opération, le coordinateur choisit son nom affiché. Les contrôles conservent le nom du vendeur et celui du premier contrôleur. Les quantités s’ouvrent en lecture, puis **Modifier** permet d’enregistrer ou d’annuler.
+
+Le provisionnement utilise la fonction Supabase `team-account` avec les variables internes de la plateforme. Elle vérifie le jeton auprès de Supabase Auth et les droits événementiels avec la session de l’appelant avant toute opération privilégiée. La clé serveur ne va pas dans Vercel ni dans le navigateur. Déployer la migration des comptes nommés, puis la fonction, avant la version web.

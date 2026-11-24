@@ -1,0 +1,5 @@
+project_id = "waren-events"
+
+[functions.team-account]
+# The handler validates the caller with Auth and authorizes each action against its event.
+verify_jwt = false

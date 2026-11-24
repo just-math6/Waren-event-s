@@ -17,7 +17,7 @@ export default async function Page(){
  {global.data==='admin'&&<Link href="/admin">← Administration</Link>}
  {assignments.some(a=>a.role==='coordination')&&<section className="space-y-4"><h1 className="text-2xl font-semibold">Espace coordinateur</h1>
  {assignments.filter(a=>a.role==='coordination').map(a=><div key={a.id} className="card space-y-3"><h2 className="text-lg font-semibold">{a.title}</h2><Link className="button block text-center" href={'/equipe/coordination/'+a.id}>Ouvrir mon événement</Link></div>)}</section>}
- {global.error||scoped.error||events?.error?<p role="alert">Service temporairement indisponible. Actualisez la page.</p>:!assignments.length&&!globalDesk?<p>Demandez à l’administrateur d’autoriser votre courriel : {user.email}</p>:null}
+ {global.error||scoped.error||events?.error?<p role="alert">Service temporairement indisponible. Actualisez la page.</p>:!assignments.length&&!globalDesk?<p>Aucun événement ne vous est attribué. Demandez au coordinateur ou à l’administrateur de vérifier votre accès.</p>:null}
  {globalDesk&&events&&!events.error&&<Desk events={events.data??[]} role={global.data}/>}
  {(['vente','entree'] as const).map(role=>localDesks.some(a=>a.role===role)?<Desk key={role} events={localDesks.filter(a=>a.role===role)} role={role}/>:null)}
  </div>;
