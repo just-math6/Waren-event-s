@@ -1,29 +1,18 @@
-import Link from 'next/link';
-import { notFound,redirect } from 'next/navigation';
-import Quantity from './quantity';
-import Stock, {type StockCategory} from './stock';
-import Modes from './modes';
-import Team,{type Member} from './team';
-import { createClient } from '@/lib/supabase/server';
-import { isUuid } from '@/lib/sale-input';
-import SignOut from '@/app/admin/(protected)/sign-out';
-type Dashboard={my_name:string|null;title:string;location:string;starts_at:string;types:StockCategory[];sales:{seller:string;type_id:string;name:string;sold:number;used:number;revenue:number}[];staff:Member[]};
-const count=(n:number)=>new Intl.NumberFormat('fr-FR').format(n);
+import {notFound,redirect} from 'next/navigation';
+import {createClient} from '@/lib/supabase/server';
+import {isUuid} from '@/lib/sale-input';
+import {fmt,fcfa,inventory,type SalesRow,type StockCategory} from '@/lib/team-view';
+import Modes from './modes';import Quantity from './quantity';import Stock from './stock';import Cash from './cash';import Team,{type Member} from './team';
+type Dashboard={my_name:string|null;title:string;location:string;starts_at:string;types:StockCategory[];sales:SalesRow[];staff:Member[]};
 export default async function Coordination({params}:{params:Promise<{id:string}>}){
- const {id}=await params; if(!isUuid(id))notFound();
- const db=await createClient();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/equipe');
- const {data,error}=await db.rpc('waren_coord_dashboard',{p_event:id});
- if(error?.code==='42501'||(!data&&!error))notFound();
- if(error)return <p role="alert">Impossible de charger cet événement. Réessayez.</p>;
- const d=data as Dashboard;const groups=new Map<string,Dashboard['sales']>();
- for(const row of d.sales)groups.set(row.seller,[...(groups.get(row.seller)??[]),row]);
- const total=(key:'sold'|'used'|'revenue')=>d.sales.reduce((n,r)=>n+Number(r[key]),0);
- return <main className="space-y-5"><SignOut loginPath="/equipe"/><Link className="text-sm text-gray-500 underline" href="/equipe">← Mes événements</Link>
- <header><p className="text-sm text-gray-500">Espace coordinateur</p><h1 className="text-2xl font-semibold">{d.title}</h1><p className="text-sm text-gray-500">{new Date(d.starts_at).toLocaleDateString('fr-FR')} · {d.location}</p></header>
- <Modes id={id} name={d.my_name} title={d.title} starts={d.starts_at}><div className="grid grid-cols-2 gap-3"><div className="card"><p>Recettes totales</p><b>{count(total('revenue'))} FCFA</b></div><div className="card"><p>Présents / vendus</p><b>{count(total('used'))} / {count(total('sold'))}</b></div></div>
- <Stock types={d.types} sales={d.sales}/>
- <section className="card space-y-2"><h2 className="font-semibold">Ventes par vendeur</h2>{!groups.size?<p>Aucune vente.</p>:Array.from(groups,([seller,rows])=><div key={seller} className="border-t border-gray-200 py-2"><p className="break-words font-medium">{seller} · {count(rows.reduce((n,r)=>n+r.sold,0))} billet(s)</p><p className="text-sm text-gray-500">{rows.map(r=>r.name+' : '+r.sold).join(' · ')}</p></div>)}</section>
- <Team event={id} members={d.staff}/>
- <details className="card"><summary className="cursor-pointer font-semibold">Réglages de l’événement</summary>
- <div className="mt-4 space-y-2"><h2 className="font-medium">Modifier la quantité prévue</h2><p className="text-sm text-gray-500">Le plafond fixe le maximum de billets par catégorie. Sa modification ne crée aucun billet.</p>{d.types.map(t=><Quantity key={t.id} event={id} type={t.id} name={t.name} price={t.price} value={t.quantity}/>)}</div></details></Modes></main>;
+ const {id}=await params;if(!isUuid(id))notFound();const db=await createClient();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/equipe');
+ const [dash,cash]=await Promise.all([db.rpc('waren_coord_dashboard',{p_event:id}),db.rpc('waren_cash_counts',{p_event:id})]);
+ if(dash.error?.code==='42501'||(!dash.data&&!dash.error))notFound();if(dash.error)return <p role="alert">Impossible de charger cet événement. Réessayez.</p>;
+ const d=dash.data as Dashboard,rows=inventory(d.types,d.sales);
+ const sum=(k:'quantity'|'sold'|'paperSold')=>rows.reduce((a,r)=>a+r[k],0),total=sum('sold');
+ const metrics=[['Billets vendus',fmt(total)+' / '+fmt(sum('quantity')),fmt(sum('paperSold'))+' papier · '+fmt(total-sum('paperSold'))+' virtuels'],['Entrées',fmt(d.sales.reduce((a,s)=>a+Number(s.used),0))+' / '+fmt(total),'sur les billets vendus'],['Espèces attendues',fcfa(d.sales.reduce((a,s)=>a+Number(s.revenue),0)),'avant remise en caisse']];
+ return <Modes id={id} title={d.title} starts={d.starts_at} name={d.my_name}
+ overview={<><div className="metric-grid">{metrics.map(([label,value,sub])=><div className="metric" key={label}><p>{label}</p><strong>{value}</strong><small>{sub}</small></div>)}</div><Stock types={d.types} sales={d.sales}/></>}
+ team={<Team event={id} members={d.staff}/>} cash={<Cash event={id} sales={d.sales} counts={cash.error?null:cash.data}/>}
+ settings={<section className="ui-panel"><p className="eyebrow">Réglages</p><h2>Quantités de billets</h2><p className="muted">Le plafond couvre les billets vendus et les papiers déjà préparés.</p>{d.types.map(t=><Quantity key={t.id} event={id} type={t.id} name={t.name} price={t.price} value={t.quantity}/>)}</section>}/>;
 }

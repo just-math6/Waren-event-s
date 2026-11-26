@@ -1,31 +1,48 @@
 'use client';
 import dynamic from 'next/dynamic';
-import {useState,useRef,useEffect} from 'react';
+import {useState,useEffect,useRef} from 'react';
 import {createClient} from '@/lib/supabase';
+import {fcfa,gateMessage} from '@/lib/team-view';
+import {VirtualSale,MySales} from './virtual-sale';
 const Camera=dynamic(()=>import('../admin/(protected)/evenements/[id]/scan/camera'),{ssr:false});
+type EventItem={id:string;title:string;starts_at:string};
 type Item={code:string;price:number;name:string};
-export default function Desk({events,role,fixed=false,onLock}:{fixed?:boolean;onLock?:(locked:boolean)=>void;events:{id:string;title:string;starts_at:string}[];role:string}){
- const [event,setEvent]=useState(fixed?events[0]?.id??'':''),[mode,setMode]=useState(role==='entree'?'entree':'vente'),[key,setKey]=useState(''),[cart,items]=useState<Item[]>([]),[msg,status]=useState(''),[color,tint]=useState('text-gray-500'),[busy,wait]=useState(false);
- const [seller,setSeller]=useState<string | null>(null);
- const held=busy||cart.length>0;
- useEffect(()=>{onLock?.(held);return ()=>onLock?.(false)},[held,onLock]);
- const [controller,setController]=useState<string|null>(null);
- const lock=useRef(false),request=useRef('');
- function note(s:string,c='text-gray-500',soldBy:string|null=null){status(s);tint(c);setSeller(soldBy);setController(null)}
- async function run(f:()=>Promise<void>){if(lock.current)return;lock.current=true;wait(true);try{await f()}catch{note('Connexion interrompue. Réessayez avant de remettre le billet ou d’autoriser l’entrée.','text-red-600')}finally{lock.current=false;wait(false)}}
- async function scan(raw:string){await run(async()=>{
- const p_key=raw.trim();if(!event||!p_key)return;setKey('');note('Vérification…');
- const {data,error}=await createClient().rpc(mode==='vente'?'waren_quote':'waren_gate',{p_event:event,p_key});
- if(error){note(error.message.includes('Billet inconnu')?error.message:'Vérification impossible. Vérifiez votre accès et la connexion.','text-red-600');return}
- if(mode==='vente'){if(cart.some(x=>x.code===data.code)){note('Déjà dans le panier.','text-amber-600');return}if(cart.length>=50){note('Maximum 50 billets par vente.');return}items([...cart,data]);request.current='';note('Billet ajouté.');return}
- const out=data.outcome;note(out==='accepted'?'Entrée autorisée':out==='utilise'?'Déjà utilisé à '+new Date(data.at).toLocaleTimeString('fr-CA'):out==='pret'?'Billet non vendu':out==='bloque'||out==='annule'?'Billet bloqué ou annulé':'Billet inconnu pour cet événement',out==='accepted'?'text-green-600':out==='utilise'?'text-amber-600':'text-red-600', ['accepted','utilise','annule'].includes(out) ? data.sold_by?.trim() || 'Vendeur non renseigné' : null); if(data.checked_by)setController(data.checked_by)
+type Result={tone:string;title:string;detail?:string;extra?:string};
+const clock=(at:string)=>new Date(at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+export default function Desk({events,role,fixed=false,onLock}:{events:EventItem[];role:string;fixed?:boolean;onLock?:(v:boolean)=>void}){
+ const [event,setEvent]=useState(fixed||events.length===1?events[0]?.id??'':''),[mode,setMode]=useState(role==='entree'?'entree':'vente'),[section,go]=useState<'home'|'paper'|'virtual'|'history'>('home');
+ const [code,input]=useState(''),[manual,show]=useState(false),[cart,items]=useState<Item[]>([]),[result,note]=useState<Result|null>(null),[busy,wait]=useState(false),[virtualLock,hold]=useState(false),[online,network]=useState(true),[count,setCount]=useState<{used:number;sold:number}|null>(null),[revision,refresh]=useState(0);
+ const locked=busy||!!cart.length||virtualLock, guard=useRef(false),request=useRef('');
+ useEffect(()=>{onLock?.(locked);return()=>onLock?.(false)},[locked,onLock]);
+ useEffect(()=>{const update=()=>network(navigator.onLine);update();window.addEventListener('online',update);window.addEventListener('offline',update);return()=>{window.removeEventListener('online',update);window.removeEventListener('offline',update)}},[]);
+ useEffect(()=>{if(!event||mode!=='entree'||!online)return;let live=true;async function read(){try{const r=await createClient().rpc('waren_gate_count',{p_event:event});if(live)setCount(r.error?null:r.data)}catch{if(live)setCount(null)}}void read();const t=setInterval(read,10000);return()=>{live=false;clearInterval(t)}},[event,mode,online,revision]);
+ function reset(){input('');show(false);note(null);setCount(null);go('home')}
+ async function operate(fn:()=>Promise<void>){if(guard.current)return;guard.current=true;wait(true);try{await fn()}catch{note({tone:'bad',title:'Connexion interrompue',detail:'Réessayez avant de remettre le billet ou d’autoriser l’entrée.'})}finally{wait(false);guard.current=false}}
+ async function scan(raw:string){if(!online||!raw.trim())return;await operate(async()=>{
+ const {data:d,error}=await createClient().rpc(mode==='vente'?'waren_quote':'waren_gate_detail',{p_event:event,p_key:raw.trim()});input('');if(error){note({tone:'bad',title:error.message.includes('Billet inconnu')?'Billet indisponible':'Vérification impossible',detail:mode==='entree'?'N’autorisez pas l’entrée sans résultat.':'Vérifiez le code, votre accès et la connexion.'});return}
+ if(mode==='entree'){const type=[d.type,d.channel,d.sold_by?'Vendu par '+d.sold_by:null].filter(Boolean).join(' · ');
+ const time=d.at&&clock(d.at);note({...gateMessage(d.outcome),detail:type,extra:d.outcome==='utilise'?(time?'Premier passage : '+time+'. ':'')+'Orienter le détenteur vers le coordinateur.':d.outcome==='accepted'?(time?'Contrôlé à '+time:'')+(d.checked_by?' · '+d.checked_by:''):'Entrée refusée.'});refresh(n=>n+1);return}
+ if(cart.some(x=>x.code===d.code)||cart.length>=50){note({tone:'warn',title:cart.length>=50?'Panier complet':'Déjà dans le panier'});return}items([...cart,d]);request.current='';note(null);
  })}
- async function pay(){await run(async()=>{request.current ||= crypto.randomUUID();const {error}=await createClient().rpc('waren_sell',{p_event:event,p_codes:cart.map(x=>x.code),p_sale:request.current});
- if(error){note(error.message.includes('déjà vendu')?error.message:'Confirmation impossible. Réessayez avec le même panier.','text-red-600');return}
- note(cart.length+' billet(s) activé(s). Paiement enregistré.','text-green-600');items([]);request.current='';})}
- return <section className="space-y-4"><h1 className="text-2xl font-semibold">{mode==='vente'?'Vente de billets papier':'Contrôle entrée'}</h1>
- {role==='admin'&&<select aria-label="Mode" className="input" disabled={busy||!!cart.length} value={mode} onChange={e=>{setMode(e.target.value);note('')}}><option value="vente">Vente</option><option value="entree">Contrôle entrée</option></select>}
- {!fixed&&<label>Événement<select className="input" disabled={busy||!!cart.length} value={event} onChange={e=>{setEvent(e.target.value);note('')}}><option value="">Choisir un événement</option>{events.map(e=><option key={e.id} value={e.id}>{e.title} · {new Date(e.starts_at).toLocaleDateString('fr-CA')}</option>)}</select></label>}
- {event&&<><Camera onScan={scan} disabled={busy}/><form className="space-y-2" onSubmit={e=>{e.preventDefault();void scan(key)}}><label>Code imprimé<input className="input" value={key} onChange={e=>setKey(e.target.value)} required/></label><button disabled={busy} className="button">{mode==='vente'?'Ajouter au panier':'Contrôler le billet'}</button></form></>}
- <div role="status"><p className={color}>{msg}</p>{seller && <p className="mt-1 break-words text-sm">Vendu par : {seller}</p>}{controller&&<p className="text-sm">Contrôlé par : {controller}</p>}</div>{mode==='vente'&&cart.length>0&&<div className="card space-y-3">{cart.map(x=><p key={x.code}>{x.name} · {x.code} · {x.price} <button className="underline" disabled={busy} onClick={()=>{items(cart.filter(i=>i.code!==x.code));request.current=''}}>Retirer</button></p>)}<b>Total : {(cart.reduce((s,i)=>s+Math.round(i.price*100),0)/100).toLocaleString('fr-CA')}</b><button disabled={busy} onClick={pay} className="button">Paiement reçu · Activer les billets</button></div>}</section>
+ const total=cart.reduce((n,x)=>n+Number(x.price),0);
+ async function pay(){await operate(async()=>{request.current ||=crypto.randomUUID();const {error}=await createClient().rpc('waren_sell',{p_event:event,p_codes:cart.map(x=>x.code),p_sale:request.current});if(error){note({tone:'bad',title:'Paiement non confirmé',detail:'Vérifiez le panier puis réessayez.'});return}note({tone:'ok',title:'Paiement enregistré',detail:cart.length+' billet(s) activé(s) · '+fcfa(total)});items([]);request.current=''})}
+ const selling=mode==='vente',current=events.find(e=>e.id===event);
+ return <section className="team-ui field-desk">
+ {!fixed&&<header className="field-header"><p className="eyebrow">Waren / Équipe</p><h1>{current?.title||'Mon événement'}</h1>{current&&<small>{new Date(current.starts_at).toLocaleDateString('fr-FR',{dateStyle:'long',timeZone:'UTC'})}</small>}</header>}
+ {!fixed&&(events.length!==1)&&<label>Événement<select className="input" disabled={locked} value={event} onChange={e=>{setEvent(e.target.value);reset()}}><option value="">Choisir un événement</option>{events.map(e=><option key={e.id} value={e.id}>{e.title}</option>)}</select></label>}
+ {['admin','terrain'].includes(role)&&<nav aria-label="Mode du poste" className="segments">{(['vente','entree'] as const).map(m=><button disabled={locked} aria-pressed={m===mode} type="button" key={m} onClick={()=>{setMode(m);reset()}}>{m==='vente'?'Vente':'Contrôle entrée'}</button>)}</nav>}
+ {event&&<>{selling&&section!=='home'&&<button className="text-action" disabled={locked} onClick={()=>{go('home');show(false);note(null)}}>Retour à la vente</button>}
+ {selling&&section==='home'?<section className="sell-home"><p className="eyebrow">Espace vendeur</p><h2>Vendre un billet</h2><div className="sale-choices">
+ <button onClick={()=>go('paper')}><span className="eyebrow">01 / Papier</span><strong>Activer un billet papier</strong><small>Scanner le ticket imprimé et confirmer les espèces.</small></button>
+ <button onClick={()=>go('virtual')}><span className="eyebrow">02 / Virtuel</span><strong>Envoyer un billet virtuel</strong><small>Remettre le billet par WhatsApp après paiement.</small></button></div><button className="secondary" onClick={()=>go('history')}>Mes ventes</button></section>
+ :selling&&section==='virtual'?<VirtualSale event={event} onLock={hold}/>:selling&&section==='history'?<MySales event={event}/>:<section className="ui-panel scan-panel">
+ <p className="eyebrow">{selling?'01 / Papier':'Téléphone du contrôleur'}</p><h2>{selling?'Activer le ticket imprimé':'Contrôle entrée'}</h2>
+ {!selling&&<p className={'connection '+(!online?'amber':'')}><i/>{online?'En ligne':'Hors connexion'}{online&&count?' · '+count.used+' / '+count.sold+' entrées':''}</p>}
+ {selling&&current?.title.trim().toLowerCase()==='football tournament two'&&<img className="paper-example" src="/maquettes/football/standard.jpg" alt="Maquette du billet Standard"/>}
+ {selling&&<p className="muted">Scannez le QR du billet du lot, puis vérifiez sa catégorie et son prix.</p>}
+ {!online?<div className="notice warn">Connexion requise pour ce poste. {selling?'Suspendez les ventes.':'N’autorisez pas l’entrée depuis cet appareil.'}</div>:<Camera disabled={busy} onScan={scan}/>}
+ {result&&<div className={'notice '+result.tone} role="status" aria-live="polite"><strong>{result.title}</strong>{result.detail&&<p>{result.detail}</p>}{result.extra&&<small>{result.extra}</small>}</div>}
+ <button className="secondary" type="button" aria-expanded={manual} onClick={()=>show(!manual)}>{manual?'Fermer la saisie':'Saisir le code si le QR est illisible'}</button>{manual&&<form className="form-stack" onSubmit={e=>{e.preventDefault();void scan(code)}}><label>Code du billet<input className="input" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={code} onChange={e=>input(e.target.value)} required/></label><button className="button" disabled={busy||!online}>{selling?'Vérifier le billet':'Contrôler ce billet'}</button></form>}
+ {selling&&<><div>{cart.map(x=><div key={x.code} className="cart-item"><div><b>{x.name} · {fcfa(x.price)}</b><small>{x.code}</small></div><button disabled={busy} className="text-action" onClick={()=>{items(cart.filter(i=>i.code!==x.code));request.current=''}}>Retirer</button></div>)}</div><button className="button" disabled={busy||!online||!cart.length} onClick={pay}>{cart.length?'Confirmer les '+fcfa(total)+' reçus':'Confirmer les espèces reçues'}</button><small>Aucun nom ni téléphone demandé à l’acheteur.</small></>}</section>}</>}
+ </section>
 }

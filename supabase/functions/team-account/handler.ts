@@ -15,7 +15,7 @@ export function teamAccountHandler(env:(key:string)=>string|undefined,request:ty
   const {event,action,name,role,password,user}=await req.json();
   if(!uuid.test(event)||typeof password!=='string'||password.length<10||new TextEncoder().encode(password).length>72)return json(400,'Mot de passe : au moins 10 caractères et au plus 72 octets.');
   const create=action==='create';
-  if(create?(typeof name!=='string'||name.trim().length<2||name.length>60||!['vente','entree'].includes(role)):(action!=='password'||!uuid.test(user)))return json(400,'Nom, rôle ou membre invalide.');
+  if(create?(typeof name!=='string'||name.trim().length<2||name.length>60||!['vente','entree','terrain'].includes(role)):(action!=='password'||!uuid.test(user)))return json(400,'Nom, rôle ou membre invalide.');
   const guard=create?'waren_staff_preflight':'waren_manage_member';
   const args=create?{p_event:event,p_name:name,p_role:role}:{p_event:event,p_user:user,p_action:'password'};
   const allowed=await request(base+'/rest/v1/rpc/'+guard,{method:'POST',headers:userHeaders,body:JSON.stringify(args)});

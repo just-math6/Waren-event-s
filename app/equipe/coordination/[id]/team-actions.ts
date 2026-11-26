@@ -13,7 +13,7 @@ export async function teamAccount(event:string,form:FormData){
    revalidatePath('/equipe/coordination/'+event);return {ok:true,message:String(data.message)};
   }catch{return {ok:false,message:'Service indisponible. Réessayez.'}}
  }
- if(!['retirer','vente','entree'].includes(action))return {ok:false,message:'Action inconnue.'};
+ if(!['retirer','vente','entree','terrain'].includes(action))return {ok:false,message:'Action inconnue.'};
  const {error}=await client.rpc('waren_manage_member',{p_event:event,p_user:form.get('user'),p_action:action});
  if(error)return {ok:false,message:'Modification refusée.'};
  revalidatePath('/equipe/coordination/'+event);return {ok:true,message:action==='retirer'?'Accès retiré.':'Rôle enregistré.'};
