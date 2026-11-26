@@ -77,3 +77,5 @@ main:has(>.workspace),main:has(>.team-index){max-width:79rem;width:100%;justify-
 }
 @media(max-width:370px){.workspace-main{padding:.72rem}.metric{padding:.58rem}.metric strong{font-size:1.28rem}.ui-panel,.sell-home{padding:.8rem}}
 .perm-options{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem}.perm-options label{display:flex;align-items:center;gap:.55rem;min-height:44px;border:1px solid var(--line);border-radius:.45rem;padding:.55rem .8rem}.perm-options input{width:1.1rem;height:1.1rem;accent-color:var(--green)}.perm-options label:has(input:checked){background:var(--mint);border-color:var(--green)}
+
+.cash-revenue{font-size:1.65rem;font-weight:700;margin:.45rem 0 1rem}.cash-seller-summary{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.75rem 0;border-top:1px solid var(--line)}.cash-seller-summary strong{white-space:nowrap}.cash-settlement{margin-top:1rem;border-top:1px solid var(--line)}.cash-settlement>summary{min-height:44px;padding:.8rem 0;cursor:pointer;color:var(--muted);font-weight:600}

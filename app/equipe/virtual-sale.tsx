@@ -48,7 +48,7 @@ export function VirtualSale({event,eventTitle,onLock}:{event:string;eventTitle:s
  <label>Prénom de l’acheteur<input className="input" value={buyer} onChange={e=>name(e.target.value)} disabled={busy||uncertain} maxLength={200} required autoComplete="given-name"/></label>
  <label>Numéro WhatsApp<input className="input" type="tel" value={phone} onChange={e=>num(e.target.value)} disabled={busy||uncertain} maxLength={30} required placeholder="Ex. : 70 12 34 56" aria-describedby="virt-phone-hint" autoComplete="tel"/></label>
  <p className="muted" id="virt-phone-hint">{phoneHint}{validPhone(phone)&&' Destinataire : +'+normalizePhone(phone)+'.'}</p>
- <button disabled={loading||!chosen||busy||(!chosen.available&&!uncertain)} className="button">{busy?'Confirmation…':uncertain?'Reprendre la confirmation':chosen?'Confirmer les '+fcfa(chosen.price)+' reçus et ouvrir WhatsApp':'Confirmer la vente'}</button>{message&&<p className="notice warn" role="status">{message}</p>}
+ <button disabled={loading||!chosen||busy||(!chosen.available&&!uncertain)} className="button">{busy?'Confirmation…':uncertain?'Reprendre la confirmation':chosen?'J’ai reçu '+fcfa(chosen.price)+' · Ouvrir WhatsApp':'Confirmer le paiement complet'}</button>{message&&<p className="notice warn" role="status">{message}</p>}
  <small>Vous appuierez sur « Envoyer » dans WhatsApp. Le lien reste disponible dans « Mes ventes ».</small></form>;
 }
 type Sale={id:string;sold_at:string;name:string;price_paid:number;channel:string;status:string;token:string|null;phone:string;buyer:string};

@@ -4,7 +4,11 @@ Ces repères décrivent les maquettes approuvées et permettent de conserver les
 
 ## Accueil coordination
 
-Navigation : Accueil, Vendre, Contrôler, Équipe, Caisse. En tête : nom et date de l’événement, raccourcis et illustration du billet pour Football Tournament Two. Ensuite : billets vendus (papier / virtuel), entrées validées, espèces attendues, stock par catégorie et modification des quantités.
+Navigation : Accueil, Vendre, Contrôler, Équipe, Caisse. En tête : nom et date de l’événement, raccourcis et illustration du billet pour Football Tournament Two. Ensuite : billets vendus (papier / virtuel), entrées validées, recettes des ventes, stock par catégorie et modification des quantités.
+
+## Paiement et caisse
+
+Le vendeur confirme le prix complet affiché, en une action, avant d’activer le papier ou de partager le billet virtuel. Aucun champ « remis », « écart » ou acompte à l’achat. L’onglet Caisse montre les recettes par vendeur ; le coordinateur peut ouvrir séparément le suivi des versements des vendeurs à la clôture.
 
 ## Poste de contrôle
 
