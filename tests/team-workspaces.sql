@@ -17,11 +17,17 @@ begin
  r:=public.waren_gate_detail(event,token);assert r->>'outcome'='accepted' and r->>'sold_by'='Agent' and r->>'channel'='Virtuel' and r->>'type'='VIP';
  assert public.waren_gate_detail(event,token)->>'outcome'='utilise';assert (public.waren_gate_count(event)->>'used')::int=1;
  assert public.waren_gate_detail(event,'absent')->>'outcome'='missing';
+ r:=public.waren_gate_station(event);
+ assert r->>'operator'='Agent' and (r->>'used')::int=1 and jsonb_array_length(r->'history')=3;
+ assert r->'history'->0->>'outcome'='missing' and r->'history'->1->>'outcome'='utilise';
+ assert r->'history'->1->>'at'=r->'history'->2->>'at' and position(token in r::text)=0;
  begin perform public.waren_cash_counts(event);raise exception 'cash visible to staff';exception when insufficient_privilege then null;end;
  perform set_config('request.jwt.claim.sub',c::text,true);
  assert jsonb_array_length(public.waren_my_sales(event))=0;
+ assert jsonb_array_length(public.waren_gate_station(event)->'history')=0;
  perform public.waren_count_cash(event,'Agent',1000,'500 à vérifier'); assert (public.waren_cash_counts(event)->0->>'counted')::int=1000;
  perform set_config('request.jwt.claim.sub',outsider::text,true);
+ begin perform public.waren_gate_station(event);raise exception 'history accessible outside assignment';exception when insufficient_privilege then null;end;
  begin perform public.waren_my_sales(event);raise exception 'sales visible cross event';exception when insufficient_privilege then null;end;
 end $check$;
 rollback;

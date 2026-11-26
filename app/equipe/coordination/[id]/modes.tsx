@@ -25,7 +25,7 @@ export default function Modes({id,title,starts,name,...views}:Props){
  function navigate(s:Section){if(busy||locked)return;select(s);setError('');if(s==='overview'||s==='cash')router.refresh()}
  const field=mode==='vente'||mode==='entree';
  return <div className="team-ui coordination">
-  <header className="coord-mast"><div className="coord-brand"><span className="coord-monogram" aria-hidden="true">W</span><span><b>Waren</b> Events</span></div><span className="coord-private">Espace privé</span></header>
+  <header className="coord-mast"><div className="coord-brand"><span className="coord-monogram" aria-hidden="true">W</span><span><b>Waren</b> Events</span></div><span className="coord-private">{mode==='entree'?'Espace contrôle':'Espace privé'}</span></header>
   <nav className="coord-nav" aria-label="Navigation de l’événement">{(Object.entries(sections) as [Section,string][]).map(([s,label])=><button key={s} type="button" aria-current={mode===s?'page':undefined} disabled={locked||busy} onClick={()=>navigate(s)}>{label}</button>)}</nav>
   <div className="coord-content">
   {mode==='overview'?<><section className={'coord-hero'+(football?' with-ticket':'')} aria-labelledby="event-heading">
@@ -33,7 +33,7 @@ export default function Modes({id,title,starts,name,...views}:Props){
   {football&&<div className="coord-art" aria-hidden="true"><FootballTicket art={footballTypes[1]} qr="/maquettes/football/illustration-qr.svg"/></div>}
   <div className="coord-actions">{actions.map(([s,label])=><button key={s} type="button" onClick={()=>navigate(s)}><Icon kind={s}/><span>{label}</span></button>)}</div>
   </section>{views.overview}</>:<>
-  <header className="coord-subhead"><p className="eyebrow">{sections[mode]} · Espace coordination</p><h1>{title}</h1></header>
+  {(mode!=='entree'||!registered)&&<header className="coord-subhead"><p className="eyebrow">{sections[mode]} · Espace coordination</p><h1>{title}</h1></header>}
   {locked&&<p className="muted">Terminez l’opération en cours pour changer de rubrique.</p>}
   {!field?views[mode]:!registered?<form className="ui-panel form-stack" onSubmit={async e=>{e.preventDefault();const n=String(new FormData(e.currentTarget).get('name')).trim();wait(true);try{const r=await createClient().rpc('waren_coord_label',{p_event:id,p_name:n});if(r.error)throw r.error;setName(n)}catch{setError('Impossible d’enregistrer le nom. Réessayez.')}finally{wait(false)}}}><label>Votre nom pour les ventes et les contrôles<input className="input" name="name" minLength={2} maxLength={60} required/></label><button disabled={busy} className="button">Enregistrer mon nom</button>{error&&<p role="alert">{error}</p>}</form>:<Desk key={mode} fixed role={mode} events={[{id,title,starts_at:starts}]} onLock={lock}/>}</>}
   </div>
