@@ -1,5 +1,5 @@
 'use client';
-import {useState,type ReactNode} from 'react';
+import {useEffect,useState,type ReactNode} from 'react';
 import FootballTicket from '@/components/football-ticket';
 import {footballTitle,footballTypes} from '@/lib/football-art';
 import {gateMessage} from '@/lib/team-view';
@@ -32,6 +32,8 @@ function Verdict({row,compact=false}:{row:Entry;compact?:boolean}){
 type Props={event:GateEvent;data:StationData|null;demo?:boolean;embedded?:boolean;roleLabel?:string;busy:boolean;offline?:boolean;error?:string;result:Entry|null;camera:ReactNode;manual:ReactNode;onHistory?:()=>void};
 export default function Station({event,data,demo=false,embedded=false,roleLabel='Contrôle entrée',busy,offline=false,error,result,camera,manual,onHistory}:Props){
  const [tab,tabTo]=useState<'scan'|'history'>('scan'),[method,methodTo]=useState<'qr'|'manual'>('qr');
+ const [dismissed,dismiss]=useState<string|null>(null);
+ useEffect(()=>{if(!result)return;const t=setTimeout(()=>dismiss(result.id),result.outcome==='accepted'?8000:15000);return()=>clearTimeout(t)},[result]);
  return <section className={'gate-shell'+(embedded?' gate-embedded':'')} aria-label="Poste de contrôle des entrées">
  {!embedded&&brand(demo)}
  <div className="gate-content">
@@ -41,14 +43,13 @@ export default function Station({event,data,demo=false,embedded=false,roleLabel=
  {offline&&<p className="gate-error" role="status">Hors connexion. Attendez la confirmation du serveur avant d’autoriser une entrée.</p>}
  {error&&<p className="gate-error" role="alert">{error}</p>}
  {tab==='scan'?<>
- <div className="gate-switch" role="group" aria-label="Mode de lecture">{([['qr','scan','Scan QR'],['manual','keyboard','Saisie manuelle']] as const).map(([key,icon,label])=><button key={key} type="button" aria-pressed={method===key} disabled={busy} onClick={()=>methodTo(key)}><Icon name={icon}/><span>{label}</span></button>)}</div>
- <section className="gate-legend"><h2>Code couleur du contrôle</h2><div>{[['ok','Vert · Autorisé'],['warn','Orange · Déjà utilisé'],['bad','Rouge · Refusé']].map(([tone,label])=><span key={tone} className={tone}><Signal tone={tone}/>{label}</span>)}</div></section>
- <div aria-live="polite" aria-atomic="true" className="gate-feedback">{result&&<Verdict row={result}/>}</div>
+ <div className="gate-switch" role="group" aria-label="Mode de lecture">{([['qr','scan','Scan QR'],['manual','keyboard','Saisie manuelle']] as const).map(([key,icon,label])=><button key={key} type="button" aria-pressed={method===key} disabled={busy} onClick={()=>{if(method!==key&&result)dismiss(result.id);methodTo(key)}}><Icon name={icon}/><span>{label}</span></button>)}</div>
+ <div aria-live="polite" aria-atomic="true" className="gate-feedback">{result&&result.id!==dismissed&&!busy&&<Verdict row={result}/>}</div>
  <section className="gate-tool">{method==='qr'?camera:manual}</section>
  </>:<section className="gate-log"><h2>Historique des contrôles</h2><p>Vos 40 derniers contrôles pour cet événement.</p>
  {!data?<p>{error?'Historique indisponible.':'Chargement…'}</p>:data.history.length?<ol>{data.history.map(row=><li key={row.id}><Verdict row={row} compact/></li>)}</ol>:<p>Aucun contrôle enregistré pour le moment.</p>}</section>}
  </div>
- <nav className="gate-bottom" aria-label="Navigation du poste">{([['scan','scan','Contrôler'],['history','history','Historique']] as const).map(([key,icon,label])=><button type="button" key={key} aria-current={tab===key?'page':undefined} disabled={busy} onClick={()=>{tabTo(key);if(key==='history')onHistory?.()}}><Icon name={icon}/><span>{label}</span></button>)}</nav>
+ <nav className="gate-bottom" aria-label="Navigation du poste">{([['scan','scan','Contrôler'],['history','history','Historique']] as const).map(([key,icon,label])=><button type="button" key={key} aria-current={tab===key?'page':undefined} disabled={busy} onClick={()=>{if(tab!==key&&result)dismiss(result.id);tabTo(key);if(key==='history')onHistory?.()}}><Icon name={icon}/><span>{label}</span></button>)}</nav>
  </section>
 }
 export function Manual({busy,onScan,demo=false}:{busy:boolean;onScan:(key:string)=>Promise<void>;demo?:boolean}){

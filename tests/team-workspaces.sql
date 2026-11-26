@@ -13,6 +13,8 @@ begin
  token:=public.waren_sell_virtual(event,ty,'Sam','22670000000',request);
  assert token=public.waren_sell_virtual(event,ty,'Sam','22670000000',request);
  assert (public.waren_my_sales(event)->0->>'token')=token;
+ assert token ~ '^[a-f0-9]{64}$' and (public.get_public_ticket(token)->>'ticket_type')='VIP';
+ assert (public.get_public_ticket(token)->>'buyer_phone')='22670000000';
  begin perform public.waren_sell_virtual(event,ty,'Deux','22670000001',gen_random_uuid());raise exception 'quota bypassed';exception when others then if sqlerrm not like 'Plus de billets disponibles%' then raise;end if;end;
  r:=public.waren_gate_detail(event,token);assert r->>'outcome'='accepted' and r->>'sold_by'='Agent' and r->>'channel'='Virtuel' and r->>'type'='VIP';
  assert public.waren_gate_detail(event,token)->>'outcome'='utilise';assert (public.waren_gate_count(event)->>'used')::int=1;

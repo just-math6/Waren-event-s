@@ -20,7 +20,7 @@ export default function Team({event,members}:{event:string;members:Member[]}){
  {m.managed&&<form onSubmit={submit} className="space-y-2"><input type="hidden" name="user" value={m.id}/><input type="hidden" name="action" value="password"/><label>Nouveau mot de passe<input className="input" type="password" name="password" autoComplete="new-password" minLength={10} required/></label><button disabled={busy} className="button">Remplacer le mot de passe</button></form>}
  <form onSubmit={submit}><input type="hidden" name="action" value="retirer"/><input type="hidden" name="user" value={m.id}/><button disabled={busy} className="text-sm text-red-600 underline">Retirer l’accès</button></form></>}</div></details></div>)}
  <form className="space-y-3 border-t border-gray-200 pt-4" onSubmit={submit}><h3 className="font-medium">Ajouter un membre</h3><input type="hidden" name="action" value="create"/>
- <label className="block">Nom de connexion<input className="input" name="name" autoComplete="off" placeholder="Ex. Awa Diop" minLength={2} maxLength={60} required/></label>
+ <label className="block">Nom de connexion<input className="input" name="name" autoComplete="off" placeholder="Ex. Awa Pahima" minLength={2} maxLength={60} required/></label>
  <Permissions/>
  <label className="block">Mot de passe<input className="input" type="password" autoComplete="new-password" name="password" minLength={10} required/><span className="text-sm text-gray-500">10 caractères minimum.</span></label><button className="button" disabled={busy}>{busy?'Enregistrement…':'Valider et créer le compte'}</button></form>
  {result&&<p role="status" className={result.ok?'text-green-600':'text-red-600'}>{result.message}</p>}</section>

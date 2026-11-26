@@ -11,7 +11,7 @@ main:has(>.gate-shell),main:has(>.team-index .gate-shell){padding:clamp(3px,1vw,
 .gate-content{display:grid;gap:clamp(.8rem,2.6vw,1.35rem);padding:var(--g-pad);min-width:0}
 .gate-person{display:flex;align-items:baseline;justify-content:space-between;gap:.4em;flex-wrap:wrap;font-weight:500;color:var(--g-sub)}
 .gate-person b{font-size:1.13em;color:var(--g-ink)}.gate-person i{display:inline-block;width:.59em;height:.59em;border-radius:50%;background:#5b8663;margin-right:.46em}.gate-person i.down{background:#ad6c29}
-.gate-event,.gate-legend,.gate-tool,.gate-log{min-width:0;border:1px solid var(--g-line);border-radius:clamp(.8rem,2.4vw,1.32rem);padding:clamp(.85rem,2.74vw,1.45rem)}
+.gate-event,.gate-tool,.gate-log{min-width:0;border:1px solid var(--g-line);border-radius:clamp(.8rem,2.4vw,1.32rem);padding:clamp(.85rem,2.74vw,1.45rem)}
 .gate-event{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;background:#f4f7f2;gap:.8em;padding:clamp(.95rem,3.35vw,1.72rem)}
 .gate-event p,.gate-reader>p{text-transform:uppercase;font-size:.86em;letter-spacing:.1em;font-weight:730;color:#57755d}.gate-shell .gate-event h1{margin:.15em 0 .22em;font-family:Arial,'Segoe UI',sans-serif;font-size:clamp(1.52rem,5.13vw,2.66rem);line-height:1.12;font-weight:600;letter-spacing:-.055em;color:var(--g-ink)}
 .gate-event span,.gate-meter small{color:var(--g-sub)}.gate-meter{border-left:1px solid #d2dbcd;padding-left:clamp(.65rem,2.5vw,1.25rem);min-width:clamp(5.1rem,21vw,10.9rem)}
@@ -22,8 +22,8 @@ main:has(>.gate-shell),main:has(>.team-index .gate-shell){padding:clamp(3px,1vw,
 .gate-switch button svg,.gate-bottom button svg,.gate-primary svg{position:absolute;top:17%;left:6%;width:1.16em;height:1.16em}
 .gate-switch button span,.gate-bottom button span{grid-column:1/-1;text-align:center;padding-top:.85em;font-size:1.11em}
 .gate-switch button[aria-pressed=true]{border-color:#d1deca;background:#fff;color:#304634}
-.gate-legend{border-radius:.85em;padding:clamp(.8rem,2.75vw,1.34rem)}.gate-shell h2{font-size:1.04em;line-height:1.32;letter-spacing:-.02em;font-weight:500;color:var(--g-ink)}
-.gate-legend>div{display:flex;gap:.45em .6em;flex-wrap:wrap;margin-top:.5em}.gate-legend>div>span{display:inline-flex;align-items:center;gap:.36em;padding:.26em .48em;border-radius:.45em;font-weight:700;font-size:.95em;white-space:nowrap}
+.gate-shell h2{font-size:1.04em;line-height:1.32;letter-spacing:-.02em;font-weight:500;color:var(--g-ink)}
+
 .gate-shell .ok{--signal:#32633c;background:#eef6ef;color:#22532d}.gate-shell .warn{--signal:#934917;background:#fdf1e1;color:#80390c}.gate-shell .bad{--signal:#a23239;background:#fbeef0;color:#8b242b}
 .gate-sign{width:1.38em;height:1.38em;display:inline-grid;place-content:center;border-radius:.3em;color:#fff;background:var(--signal);font-weight:800;line-height:1}
 .gate-tool{display:grid;gap:1em}.gate-form,.gate-camera{display:grid;gap:clamp(.8rem,2.55vw,1.35rem)}.gate-form label{font-size:1.15em;font-weight:650;letter-spacing:-.02em}
@@ -39,5 +39,5 @@ main:has(>.gate-shell),main:has(>.team-index .gate-shell){padding:clamp(3px,1vw,
 .gate-bottom{position:sticky;bottom:0;z-index:4;border-radius:0 0 1.2em 1.2em;border-top:1px solid var(--g-line);background:#f7f9f5;padding:.45em .7em max(.45em,env(safe-area-inset-bottom))}.gate-bottom button[aria-current=page]{background:#e3ecdb;color:#23472b}
 .team-account{margin:.6rem 0}.team-account details>div{top:auto;bottom:100%}
 .gate-embedded{width:100%;max-width:51rem;margin-left:0}.gate-embedded .gate-content{padding-top:1rem}
-@media(max-width:540px){.gate-meter>span{font-size:.82em}.gate-pill{font-size:.84em}.gate-switch button svg,.gate-bottom button svg{width:1.04em;height:1.04em;left:6%;top:13%}.gate-legend>div{gap:.35em}.gate-legend>div>span{font-size:.86em}.gate-person{font-size:.93em}.gate-event{gap:.48em}.gate-event>div:first-child>span{font-size:.9em}.gate-bottom{border-radius:0 0 .9rem .9rem}}
+@media(max-width:540px){.gate-meter>span{font-size:.82em}.gate-pill{font-size:.84em}.gate-switch button svg,.gate-bottom button svg{width:1.04em;height:1.04em;left:6%;top:13%}.gate-person{font-size:.93em}.gate-event{gap:.48em}.gate-event>div:first-child>span{font-size:.9em}.gate-bottom{border-radius:0 0 .9rem .9rem}}
 @media(max-width:370px){.gate-event{grid-template-columns:1fr}.gate-meter{padding:.5em 0 0;border-left:0;border-top:1px solid var(--g-line);display:flex;align-items:center;justify-content:space-between}.gate-meter progress{width:20%}}

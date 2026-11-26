@@ -7,7 +7,7 @@ function invoke(responses:Response[],body:object,login=true){
  const result=handler(new Request('https://app.example.test/functions/v1/team-account',{method:'POST',headers:login?{Authorization:'Bearer user-session'}:{},body:JSON.stringify(body)}));
  return {network,result};
 }
-const create={event,action:'create',name:'Awa Diop',password:'test-password-only',role:'vente'};
+const create={event,action:'create',name:'Awa Pahima',password:'test-password-only',role:'vente'};
 const res=(data:object={},status=200)=>Response.json(data,{status});
 describe('coordinator provisioning',()=>{
  it('uses the caller for both membership checks and creates only the generated staff identity',async()=>{

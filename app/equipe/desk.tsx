@@ -32,7 +32,7 @@ export default function Desk({events,role,fixed=false,onLock}:{events:EventItem[
  {!selling&&current?<LiveGate key={event} event={current} embedded={fixed} onLock={hold}/>:selling&&section==='home'?<section className="sell-home"><p className="eyebrow">Espace vendeur</p><h2>Vendre un billet</h2><div className="sale-choices">
  <button onClick={()=>go('paper')}><span className="eyebrow">01 / Papier</span><strong>Activer un billet papier</strong><small>Scanner le ticket imprimé et confirmer les espèces.</small></button>
  <button onClick={()=>go('virtual')}><span className="eyebrow">02 / Virtuel</span><strong>Envoyer un billet virtuel</strong><small>Remettre le billet par WhatsApp après paiement.</small></button></div><button className="secondary" onClick={()=>go('history')}>Mes ventes</button></section>
- :selling&&section==='virtual'?<VirtualSale event={event} onLock={hold}/>:selling&&section==='history'?<MySales event={event}/>:<section className="ui-panel scan-panel">
+ :selling&&section==='virtual'?<VirtualSale key={event} event={event} eventTitle={current!.title} onLock={hold}/>:selling&&section==='history'?<MySales key={event} event={event} eventTitle={current!.title}/>:<section className="ui-panel scan-panel">
  <p className="eyebrow">01 / Papier</p><h2>Activer le ticket imprimé</h2>
  {selling&&current?.title.trim().toLowerCase()==='football tournament two'&&<img className="paper-example" src="/maquettes/football/standard.jpg" alt="Maquette du billet Standard"/>}
  {selling&&<p className="muted">Scannez le QR du billet du lot, puis vérifiez sa catégorie et son prix.</p>}

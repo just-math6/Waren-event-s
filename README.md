@@ -67,7 +67,7 @@ Le contrôle du téléphone est temporisé de 350 ms et recherche uniquement les
 
 `SELLER_NAMES` permet d’ajouter des vendeurs séparés par des virgules au compte administrateur, sans créer de comptes supplémentaires. La sélection est contrôlée côté serveur. Le prix payé est lu depuis `ticket_types`, et l’appartenance du type à l’événement est vérifiée avant insertion. Le trigger existant conserve le contrôle du quota ; son message est présenté dans le formulaire.
 
-Chaque formulaire utilise un token cryptographiquement aléatoire de 32 octets. La contrainte unique et la recherche du token permettent de reprendre la même vente après une réponse perdue sans réinsérer le billet. Après confirmation, le lien utilise le domaine courant en HTTPS (HTTP autorisé pour localhost), avec copie et ouverture de WhatsApp au numéro international normalisé. L’envoi du message reste manuel dans WhatsApp.
+Chaque formulaire utilise un token cryptographiquement aléatoire de 32 octets. La contrainte unique et la recherche du token permettent de reprendre la même vente après une réponse perdue sans réinsérer le billet. Après confirmation, le billet utilise le domaine HTTPS public (NEXT_PUBLIC_TICKET_ORIGIN, par défaut https://waren-events.vercel.app). La vente prépare WhatsApp pour le numéro normalisé avec la catégorie, l’événement et le lien. Le vendeur appuie sur Envoyer dans WhatsApp. Si le navigateur bloque l’ouverture, le reçu permet de rouvrir WhatsApp ou de copier le même lien.
 
 La route publique `/billet/[token]` affiche le billet et permet son téléchargement PNG. Le déploiement doit utiliser le domaine public final avant de partager les liens aux acheteurs.
 

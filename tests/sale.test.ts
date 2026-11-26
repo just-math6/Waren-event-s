@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { normalizePhone, validPhone, whatsappLink } from '../lib/sale-input';
+import { normalizePhone, validPhone } from '../lib/sale-input';
 const mocks = vi.hoisted(() => ({ requireAdmin: vi.fn(), maybeSingle: vi.fn(), insert: vi.fn(), range: vi.fn() }));
 vi.mock('../lib/auth', () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock('../lib/sellers', () => ({ sellerNames: () => ['Admin'] }));
@@ -9,15 +9,10 @@ import { checkPhone, confirmSale } from '../app/admin/(protected)/evenements/[id
 const input = { eventId: '11111111-1111-1111-1111-111111111111', typeId: '22222222-2222-2222-2222-222222222222', buyerName: 'Alice Dupont', phone: '+1 819 555 0123', seller: 'Admin', token: 'a'.repeat(64) };
 beforeEach(() => { vi.resetAllMocks(); mocks.requireAdmin.mockResolvedValue({ email: 'admin@example.com' }); mocks.insert.mockResolvedValue({ error: null }); });
 describe('sale', () => {
-  it('normalizes international phone formatting without guessing a country', () => {
+  it('normalizes international phone formatting and supports a + or 00 prefix', () => {
     expect(normalizePhone('+1 (819) 555-0123')).toBe('18195550123');
     expect(normalizePhone('001 819 555 0123')).toBe('18195550123');
     expect(validPhone('hello18195550123')).toBe(false);
-  });
-  it('encodes the first name and link for WhatsApp', () => {
-    const url = new URL(whatsappLink(input.phone, ' Alice Dupont ', 'https://example.com/billet/abc'));
-    expect(url.pathname).toBe('/18195550123');
-    expect(url.searchParams.get('text')).toBe('Bonjour Alice, voici votre billet : https://example.com/billet/abc');
   });
   it('detects a previously formatted phone', async () => {
     mocks.range.mockResolvedValue({ data: [{ buyer_phone: '+1 819 555 0123' }] });
