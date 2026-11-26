@@ -1,0 +1,59 @@
+/* The coordination workspace follows the approved match-day mockup. */
+main:has(>.coordination){max-width:80rem;width:calc(100% - 6px);min-height:100svh;justify-content:flex-start;padding:0;margin:clamp(4px,1vw,14px) auto}
+.coordination{--forest:#1e3d31;--leaf:#37634a;--lime:#ddf097;--pale:#eef3e9;--ink:#1c2b25;--text:#1c2b25;--sub:#56645c;--stroke:#dae2da;--gutter:clamp(1rem,3.08vw,2.5rem);--unit:clamp(1rem,1.85vw,1.5rem);background:#fff;border:1px solid var(--stroke);border-radius:clamp(.8rem,1.85vw,1.5rem);color:var(--ink);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.4;min-width:0}
+.coord-mast,.coord-nav{background:#fafcf9;padding-inline:var(--gutter);border-bottom:1px solid #dde4de}
+.coord-mast{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:clamp(1rem,2.15vw,1.75rem);border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0}
+.coord-brand{display:flex;align-items:center;gap:clamp(.6rem,1.2vw,1rem);color:#59695f;font-size:clamp(1.45rem,2.8vw,2.25rem);line-height:1;letter-spacing:-.065em;white-space:nowrap}
+.coord-brand b{font-weight:700;color:#263e31}
+.coord-monogram{display:grid;place-content:center;flex:none;width:clamp(2.3rem,4.36vw,3.5rem);aspect-ratio:1;border-radius:24%;background:linear-gradient(#6e8076,#334b3d 48%,#203c2b);color:#eafa8e;font:italic 900 clamp(1.5rem,2.95vw,2.35rem)/1 system-ui,sans-serif;letter-spacing:-.12em;padding-right:.12em}
+.coord-private,.coord-category-heading>span{border-radius:999px;background:var(--pale);color:#3c503c;font-weight:700;white-space:nowrap;font-size:clamp(.79rem,1.55vw,1.25rem);padding:.35em .8em}
+.coord-nav{display:flex;flex-wrap:wrap;align-items:center;gap:clamp(.15rem,.95vw,.75rem);padding-block:clamp(.4rem,1.13vw,.9rem)}
+.coord-nav button,.coord-actions button,.coord-stock summary{min-height:44px;font-size:var(--unit);font-weight:500}
+.coord-nav button{border-radius:.58em;padding:.65em .86em;color:var(--ink)}
+.coord-nav button[aria-current=page]{color:#244b35;background:#e6eee0}.coord-nav button:not([aria-current]):hover{background:#eff3ed}
+.coord-content{padding:clamp(1rem,2.18vw,1.75rem) var(--gutter)}
+.coord-hero{background:var(--forest);color:#fff;border-radius:clamp(.9rem,1.65vw,1.32rem);padding:clamp(1.4rem,3.6vw,2.9rem) clamp(1.2rem,3.42vw,2.75rem) clamp(1.5rem,4.4vw,3.5rem);display:grid;gap:clamp(1.1rem,2.3vw,1.85rem) 2vw;align-items:center}
+.coord-hero.with-ticket{grid-template-columns:minmax(0,1fr) minmax(0,28.5%)}
+.coord-hero-copy{grid-column:1;min-width:0}.coord-kicker{font-size:clamp(.78rem,1.42vw,1.14rem);color:#ebfa8e;text-transform:uppercase;letter-spacing:.11em;font-weight:750}
+.coord-hero h1{font-size:clamp(2rem,3.92vw,3.16rem);line-height:1.1;letter-spacing:-.055em;font-weight:650;color:white;margin:clamp(.65rem,1.35vw,1.08rem) 0 clamp(.65rem,1.25vw,1rem)}
+.coord-date{font-size:clamp(.95rem,1.75vw,1.39rem);color:#e5eddd}.coord-date span{padding:0 .23em}
+.coord-actions{grid-column:1;display:flex;flex-wrap:wrap;align-items:stretch;gap:clamp(.5rem,1vw,.83rem)}
+.coord-actions button{display:grid;align-content:center;justify-items:start;gap:.15em;text-align:left;background:#2c4e3e;color:white;font-family:inherit;line-height:1.3;border:1px solid #799582;border-radius:.58em;padding:.51em .85em .56em;letter-spacing:-.027em}
+.coord-actions button:first-child{background:var(--lime);border-color:var(--lime);color:#223d28}.coord-actions button:hover{filter:brightness(1.07)}
+.coord-actions svg{width:1.08em;height:1.08em}.coord-art{grid-column:2;grid-row:1 / span 2;align-self:center;transform:rotate(-7deg);pointer-events:none}
+.coord-art .football-ticket{border:3px solid #dfedbf;border-radius:6px;overflow:hidden;background:#eafa8e}
+.coord-hero :focus-visible{outline:3px solid white;outline-offset:4px}
+.coord-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.6rem,1.25vw,1rem);margin:clamp(.9rem,1.85vw,1.5rem) 0}
+.coord-metrics>div,.coord-stock,.coord-edit summary{border:1px solid var(--stroke);background:white;border-radius:clamp(.85rem,1.45vw,1.18rem)}
+.coord-metrics>div{padding:clamp(1rem,2.45vw,2rem) clamp(.9rem,2.13vw,1.72rem) clamp(1rem,2.16vw,1.75rem)}
+.coord-metrics dt,.coord-metrics dd>span,.coord-category>p{display:block;font-size:clamp(.92rem,1.66vw,1.34rem);font-weight:400;color:var(--sub)}
+.coord-metrics strong{display:block;color:var(--ink);font-weight:620;font-size:clamp(1.45rem,2.53vw,2.05rem);letter-spacing:-.045em;margin:.18em 0}
+.coord-stock{padding:clamp(.95rem,2.12vw,1.72rem)}.coord-stock-head{display:grid;align-items:start;position:relative;padding:clamp(.25rem,1.38vw,1.1rem) 0 clamp(.75rem,1.3vw,1.05rem)}
+.coord-stock-head>h2{grid-area:1/1;align-self:start;margin:.52em 0 0;font-size:clamp(1.2rem,2.23vw,1.8rem);font-weight:600;letter-spacing:-.035em;pointer-events:none;max-width:52%}
+.coord-edit{grid-area:1/1}.coord-edit summary{cursor:pointer;list-style:none;width:max-content;max-width:49%;margin-left:auto;padding:.64em .92em;border-radius:.55em;border-color:#cbd8cb;color:var(--ink);text-align:center}.coord-edit summary::-webkit-details-marker{display:none}
+.coord-edit summary span+span,.coord-edit[open] summary span:first-child{display:none}.coord-edit[open] summary span+span{display:inline}
+.coord-edit-panel{margin-top:1rem;padding:clamp(.7rem,1.2vw,1rem);background:#f6f8f4;border-radius:.6rem}
+.coord-category{padding:clamp(.85rem,1.38vw,1.1rem) 0 clamp(.7rem,1.1vw,.88rem);border-top:1px solid #e6eae5}.coord-category:last-child{padding-bottom:.05rem}
+.coord-category-heading{display:flex;align-items:center;justify-content:space-between;gap:.6rem}.coord-category-heading h3{font-size:var(--unit);font-weight:580}
+.coord-bar{display:flex;gap:2px;background:#f6f8f3;border-radius:99px;overflow:hidden;height:clamp(.48rem,.96vw,.77rem);margin:clamp(.55rem,.98vw,.8rem) 0 clamp(.55rem,1.02vw,.82rem)}.coord-bar>span{flex-basis:0}.coord-bar .sold{background:#37634a}.coord-bar .paper{background:#abc58d}.coord-bar .free{background:#dae2da}
+.coord-subhead{margin:0 0 1.1rem}.coord-subhead h1{margin-top:.35rem}
+.coord-footer{border-top:1px solid var(--stroke);padding:.6rem var(--gutter);display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:var(--sub);font-size:.91rem}
+.coord-footer a{display:inline-flex;align-items:center;min-height:44px}.coord-footer details>div{bottom:100%;top:auto}
+@media(max-width:780px){
+ .coord-brand{letter-spacing:-.055em}.coord-actions button{font-size:1rem}.coord-hero.with-ticket{grid-template-columns:minmax(0,1fr) minmax(0,24%)}.coord-actions{grid-column:1/-1}
+ .coord-art{grid-row:1}.coord-hero{padding-block:1.4rem;gap:1rem}.coord-hero h1{font-size:clamp(1.8rem,4.3vw,2.1rem)}
+}
+@media(max-width:540px){
+ main:has(>.coordination){width:100%;margin:0 auto}.coordination{border:0;border-radius:0;--gutter:.85rem}
+ .coord-mast{padding-block:.85rem}.coord-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.1rem;padding:.33rem .45rem}
+ .coord-nav button{font-size:clamp(.79rem,3.45vw,1rem);padding:.55rem .12rem;border-radius:.5rem}
+ .coord-content{padding-top:.85rem}.coord-hero{padding:1.12rem 1rem 1rem}.coord-hero.with-ticket{grid-template-columns:minmax(0,1fr) minmax(0,27%);gap:.8rem .5rem}.coord-kicker{font-size:.7rem}
+ .coord-hero h1{font-size:clamp(1.67rem,6.8vw,2rem);margin:.55rem 0}.coord-date{font-size:.86rem}
+ .coord-art{margin-right:.2rem}.coord-art .football-ticket{border-width:1.5px;border-radius:3px}
+ .coord-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
+ .coord-actions button{min-height:64px;align-content:start;font-size:clamp(.81rem,3.4vw,1rem);padding:.53rem .43rem;gap:.26rem}
+ .coord-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}.coord-metrics>div{padding:.7rem}.coord-metrics>div:last-child{grid-column:1/-1}
+ .coord-metrics strong{font-size:1.45rem}.coord-metrics dt,.coord-metrics dd>span,.coord-category>p{font-size:.88rem}
+ .coord-stock{padding:.85rem}.coord-stock-head{padding:0 0 .7rem;align-items:center}.coord-stock-head>h2{font-size:1.04rem;max-width:48%;align-self:center;margin:0}
+ .coord-stock-head:has(details[open])>h2{align-self:start;margin-top:.65rem}.coord-edit summary{font-size:.86rem;line-height:1.25;min-height:44px;padding:.65rem .55rem}
+}
