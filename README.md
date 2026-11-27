@@ -29,6 +29,12 @@ Vercel termine TLS, émet le certificat, redirige HTTP vers HTTPS (308) et envoi
 
 Dans **Settings → Environment Variables → Production**, `NEXT_PUBLIC_SUPABASE_URL` doit être l’URL HTTPS du projet Supabase. `NEXT_PUBLIC_TICKET_ORIGIN` est facultative : sa valeur par défaut est `https://waren-events.vercel.app`. Après un changement de variable publique, redéployer. Dans **Supabase → Authentication → URL Configuration**, utiliser cette origine HTTPS comme **Site URL** et autoriser les deux retours exacts : `https://waren-events.vercel.app/equipe` et `https://waren-events.vercel.app/equipe/mot-de-passe`. Les exceptions HTTP locales sont réservées au développement.
 
+## Indexation
+
+L’accueil est un portail de connexion. Les pages d’équipe, d’administration, de démonstration et de billet restent en `noindex`. Les fichiers d’impression sous `/maquettes/` envoient la même consigne par en-tête HTTP. `/robots.txt` autorise l’exploration pour que les moteurs puissent lire ces consignes ; il ne modifie pas les droits d’accès.
+
+Aucun sitemap n’est publié. Si des pages d’événement sont un jour destinées aux recherches publiques, autoriser explicitement leur indexation et n’inscrire que leurs URL publiques dans le sitemap. Ne jamais y inclure les liens individuels de billets.
+
 ## Structure et sécurité
 
 - `lib/supabase.ts` : client navigateur utilisant les deux variables publiques demandées et des cookies SSR.
