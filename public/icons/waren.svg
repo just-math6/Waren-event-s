@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Waren Events</title>
+  <defs>
+    <linearGradient id="green" x2="0%" y2="100%">
+      <stop stop-color="#6e8076"/>
+      <stop offset=".48" stop-color="#334b3d"/>
+      <stop offset="1" stop-color="#203c2b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#green)"/>
+  <path fill="#eafa8e" d="M39.56 48.24H31.72L30.56 31.18Q30.49 30.27 30.44 27.41Q30.39 24.56 30.49 23.58Q30.13 24.78 29.09 27.43Q28.05 30.09 27.55 31.22L19.94 48.24H12.12L10 15.76H16.78L17.56 33.49Q17.72 38.4 17.52 42Q17.9 40.73 18.88 38.08Q19.86 35.42 20.56 33.96L28.76 15.76H35.27L36.54 33.96Q36.62 35.18 36.61 37.69Q36.6 40.2 36.5 42Q37.05 40.27 38.03 37.68Q39.02 35.09 39.72 33.49L47.22 15.76H54Z"/>
+</svg>
