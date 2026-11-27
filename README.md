@@ -23,6 +23,12 @@ Dans Supabase, activer Email/password, créer ou utiliser le compte administrate
 
 Les variables doivent aussi être configurées sur l’hébergeur avant la compilation. `.env.local` est ignoré par Git.
 
+## HTTPS en production
+
+Vercel termine TLS, émet le certificat, redirige HTTP vers HTTPS (308) et envoie HSTS. Ne pas dupliquer ces règles dans Next.js. Dans **Settings → Domains**, `waren-events.vercel.app` doit être rattaché à la production, sans redirection vers un autre domaine.
+
+Dans **Settings → Environment Variables → Production**, `NEXT_PUBLIC_SUPABASE_URL` doit être l’URL HTTPS du projet Supabase. `NEXT_PUBLIC_TICKET_ORIGIN` est facultative : sa valeur par défaut est `https://waren-events.vercel.app`. Après un changement de variable publique, redéployer. Dans **Supabase → Authentication → URL Configuration**, utiliser cette origine HTTPS comme **Site URL** et autoriser les deux retours exacts : `https://waren-events.vercel.app/equipe` et `https://waren-events.vercel.app/equipe/mot-de-passe`. Les exceptions HTTP locales sont réservées au développement.
+
 ## Structure et sécurité
 
 - `lib/supabase.ts` : client navigateur utilisant les deux variables publiques demandées et des cookies SSR.

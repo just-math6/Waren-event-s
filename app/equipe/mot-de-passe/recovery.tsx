@@ -2,6 +2,7 @@
 import {useEffect,useState,type FormEvent} from 'react';
 import {createBrowserClient} from '@supabase/ssr';
 import {getSupabaseConfig} from '@/lib/supabase/config';
+import {authReturnUrl} from '@/lib/secure-url';
 import {useRouter} from 'next/navigation';
 
 let recoveryClient: ReturnType<typeof createBrowserClient> | undefined;
@@ -49,7 +50,7 @@ export default function Recovery(){
  async function send(e:FormEvent<HTMLFormElement>){
    e.preventDefault();if(busy)return;setBusy(true);
    try{
-     const r=await createClient().auth.resetPasswordForEmail(email.trim(),{redirectTo:location.origin+'/equipe/mot-de-passe'});
+     const r=await createClient().auth.resetPasswordForEmail(email.trim(),{redirectTo:authReturnUrl(location.origin,'/equipe/mot-de-passe')});
      setMsg(r.error?'Envoi impossible pour le moment. Réessayez dans quelques minutes.':'Si le compte existe, un courriel vient d’être envoyé. Copiez le lien du bouton, puis utilisez le formulaire.');
    }catch{setMsg('Connexion impossible. Réessayez.');}finally{setBusy(false);}
  }

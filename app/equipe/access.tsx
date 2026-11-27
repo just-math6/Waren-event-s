@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import {createClient} from '@/lib/supabase';
+import {authReturnUrl} from '@/lib/secure-url';
 export default function Access(){
  const router=useRouter();
  const [signup,setSignup]=useState(false),[msg,setMsg]=useState(''),[busy,setBusy]=useState(false);
@@ -10,7 +11,7 @@ export default function Access(){
  try {const db=createClient(), auth=db.auth;
  let email=login;
  if(!signup&&!login.includes('@')){const a=await db.rpc('waren_staff_address',{p_name:login});if(a.error)throw a.error;email=a.data;}
- const cred={email,password};const r=signup?await auth.signUp({...cred,options:{emailRedirectTo:location.origin+'/equipe'}}):await auth.signInWithPassword(cred);
+ const cred={email,password};const r=signup?await auth.signUp({...cred,options:{emailRedirectTo:authReturnUrl(location.origin,'/equipe')}}):await auth.signInWithPassword(cred);
  if(r.error)setMsg(signup?'Inscription impossible. Vérifiez les champs ou contactez l’administrateur.':'Connexion impossible. Vérifiez vos identifiants.');
  else if(r.data.session)router.refresh();else setMsg('Consultez votre courriel, puis revenez ici pour vous connecter.');}
  catch{setMsg('Service indisponible. Réessayez.');}finally{setBusy(false);}}}>
