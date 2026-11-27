@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import FootballTicket from '@/components/football-ticket';
 import {findFootballArt} from '@/lib/football-art';
 import QRCode from 'qrcode';
@@ -9,6 +10,12 @@ import {createClient} from '@/lib/supabase/server';
 import {isUuid} from '@/lib/sale-input';
 import EventDate from '../../event-date';
 import Print from './print';
+
+export const metadata: Metadata = {
+  title: 'Lots de billets papier',
+  description: 'Préparez les lots par catégorie, vérifiez leur aperçu avant impression et bloquez les billets papier invendus si nécessaire.',
+};
+
 export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{lot?:string;msg?:string}>}){
  await requireAdmin();const {id}=await params; if(!isUuid(id))notFound(); const db=await createClient(),base='/admin/evenements/'+id+'/papier';const q=await searchParams;
  const e=await db.from('events').select('title,starts_at,location,ticket_art').eq('id',id).single(); if(!e.data)notFound();

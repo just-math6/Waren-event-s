@@ -5,7 +5,8 @@ import { getPublicTicket } from '@/lib/get-public-ticket';
 import TicketCard from './ticket-card';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
-  title: 'Votre billet — Waren Event’s', description: 'Votre billet d’entrée',
+  title: 'Votre billet d’entrée',
+  description: 'Présentez le QR code à l’entrée ou téléchargez votre billet pour le garder sur votre téléphone. Aucun compte n’est nécessaire.',
   robots: { index: false, follow: false, nocache: true }, referrer: 'no-referrer',
 };
 export default async function TicketPage({ params }: { params: Promise<{ token: string }> }) {

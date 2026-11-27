@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import {createClient} from '@/lib/supabase/server';
 import Access from './access';
 import Desk from './desk';
 import SignOut from '../admin/(protected)/sign-out';
+
+export const metadata: Metadata = {
+  title: 'Espace équipe',
+  description: 'Connectez-vous pour retrouver vos événements et accéder à la vente, au contrôle des entrées ou à la coordination selon vos droits.',
+};
+
 
 type Assignment = {id:string; title:string; starts_at:string; role:'coordination'|'vente'|'entree'|'terrain'};
 export default async function Page(){

@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import { isUuid } from '@/lib/sale-input';
 import Scanner from './scanner';
+
+export const metadata: Metadata = {
+  title: 'Contrôle des entrées',
+  description: 'Scannez un QR code ou recherchez un billet pour vérifier sa validité, enregistrer une entrée et repérer un billet déjà utilisé.',
+};
+
 
 export default async function ScanPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireAdmin();

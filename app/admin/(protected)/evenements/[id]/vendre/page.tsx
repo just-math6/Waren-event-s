@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { randomBytes } from 'node:crypto';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -7,6 +8,12 @@ import { sellerNames } from '@/lib/sellers';
 import { isUuid } from '@/lib/sale-input';
 import EventDate from '../../event-date';
 import SaleForm, { type TicketType } from './sale-form';
+
+export const metadata: Metadata = {
+  title: 'Vendre un billet',
+  description: 'Enregistrez une vente en espèces et préparez le lien du billet virtuel à remettre à l’acheteur sur WhatsApp.',
+};
+
 export default async function SellPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireAdmin();
   const { id } = await params;

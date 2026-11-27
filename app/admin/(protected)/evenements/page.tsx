@@ -1,9 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
 import DeleteEvent from './delete-event';
 import NewEvent from './new-event';
 import EventDate from './event-date';
+
+export const metadata: Metadata = {
+  title: 'Gestion des événements',
+  description: 'Consultez les ventes et les recettes par événement, créez un événement ou ouvrez sa billetterie.',
+};
+
 export default async function EventsPage() {
   await requireAdmin();
   const supabase = await createClient();

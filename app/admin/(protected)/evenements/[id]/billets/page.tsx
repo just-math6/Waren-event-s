@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
@@ -6,6 +7,12 @@ import { isUuid } from '@/lib/sale-input';
 import { loadAttendance } from '@/lib/attendance';
 import EventDate from '../../event-date';
 import TicketList from './ticket-list';
+
+export const metadata: Metadata = {
+  title: 'Liste des billets et des présences',
+  description: 'Recherchez un billet par nom ou téléphone et suivez les entrées validées pour cet événement.',
+};
+
 
 export default async function TicketsPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();

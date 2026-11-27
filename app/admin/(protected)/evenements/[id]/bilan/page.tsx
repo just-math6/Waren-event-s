@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
@@ -5,6 +6,12 @@ import { createClient } from '@/lib/supabase/server';
 import { isUuid } from '@/lib/sale-input';
 import { attendanceRate, loadReport, sellerBreakdown, typeBreakdown } from '@/lib/event-report';
 import ExportCsv from './export-csv';
+
+export const metadata: Metadata = {
+  title: 'Bilan des ventes et des entrées',
+  description: 'Consultez les recettes, le taux de présence et les ventes par catégorie et par vendeur. Téléchargez le détail des billets au format CSV.',
+};
+
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();

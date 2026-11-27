@@ -1,7 +1,14 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/server';
+
+export const metadata: Metadata = {
+  title: 'Gestion des accès',
+  description: 'Nommez un coordinateur et gérez les autorisations des membres qui participent à vos événements.',
+};
+
 async function change(form: FormData) {
   'use server';
   await requireAdmin(); const db=await createClient();

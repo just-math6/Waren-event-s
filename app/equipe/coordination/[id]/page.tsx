@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import {notFound,redirect} from 'next/navigation';
 import {createClient} from '@/lib/supabase/server';
 import {isUuid} from '@/lib/sale-input';
 import {type SalesRow,type StockCategory} from '@/lib/team-view';
 import Modes from './modes';import Overview from './overview';import Cash from './cash';import Team,{type Member} from './team';
+
+export const metadata: Metadata = {
+  title: 'Coordination de l’événement',
+  description: 'Suivez les ventes, ajustez les quantités de billets et gérez l’équipe et la caisse de votre événement.',
+};
+
 type Dashboard={my_name:string|null;title:string;location:string;starts_at:string;types:StockCategory[];sales:SalesRow[];staff:Member[]};
 export default async function Coordination({params}:{params:Promise<{id:string}>}){
  const {id}=await params;if(!isUuid(id))notFound();const db=await createClient();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/equipe');

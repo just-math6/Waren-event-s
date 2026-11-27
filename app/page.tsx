@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: { absolute: 'Waren Events · Accueil de la billetterie' },
+  description: 'Accédez à votre espace équipe ou administrateur. Si vous avez reçu un billet sur WhatsApp, ouvrez le lien du message pour le consulter.',
+};
+
 export default function Home() {
   return <div className="space-y-6">
     <header className="space-y-4 rounded-2xl bg-[#163e30] px-5 py-7 text-white sm:px-8">
