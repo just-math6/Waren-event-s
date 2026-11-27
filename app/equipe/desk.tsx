@@ -34,7 +34,7 @@ export default function Desk({events,role,fixed=false,onLock}:{events:EventItem[
  <button onClick={()=>go('virtual')}><span className="eyebrow">02 / Virtuel</span><strong>Envoyer un billet virtuel</strong><small>Remettre le billet par WhatsApp après paiement.</small></button></div><button className="secondary" onClick={()=>go('history')}>Mes ventes</button></section>
  :selling&&section==='virtual'?<VirtualSale key={event} event={event} eventTitle={current!.title} onLock={hold}/>:selling&&section==='history'?<MySales key={event} event={event} eventTitle={current!.title}/>:<section className="ui-panel scan-panel">
  <p className="eyebrow">01 / Papier</p><h2>Activer le ticket imprimé</h2>
- {selling&&current?.title.trim().toLowerCase()==='football tournament two'&&<img className="paper-example" src="/maquettes/football/standard.jpg" alt="Maquette du billet Standard"/>}
+ {selling&&current?.title.trim().toLowerCase()==='football tournament two'&&<img className="paper-example" src="/maquettes/football/standard.jpg" alt="Billet Standard : emplacement du code QR à droite"/>}
  {selling&&<p className="muted">Scannez les billets, puis confirmez quand vous avez reçu le total affiché.</p>}
  {!online?<div className="notice warn">Connexion requise pour ce poste. Suspendez les ventes.</div>:<Camera disabled={busy} onScan={scan}/>}
  {result&&<div className={'notice '+result.tone} role="status" aria-live="polite"><strong>{result.title}</strong>{result.detail&&<p>{result.detail}</p>}{result.extra&&<small>{result.extra}</small>}</div>}

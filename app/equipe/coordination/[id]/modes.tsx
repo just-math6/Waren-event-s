@@ -30,7 +30,7 @@ export default function Modes({id,title,starts,name,...views}:Props){
   <div className="coord-content">
   {mode==='overview'?<><section className={'coord-hero'+(football?' with-ticket':'')} aria-labelledby="event-heading">
   <div className="coord-hero-copy"><p className="coord-kicker">{football?'Football · Jour de match':'Événement · Coordination'}</p><h1 id="event-heading">{title}</h1><p className="coord-date">{date}<span aria-hidden="true"> · </span>Espace coordination</p></div>
-  {football&&<div className="coord-art" aria-hidden="true"><FootballTicket art={footballTypes[1]} qr="/maquettes/football/illustration-qr.svg"/></div>}
+  {football&&<div className="coord-art" aria-hidden="true"><FootballTicket usage="decoration" art={footballTypes[1]} qr="/maquettes/football/illustration-qr.svg"/></div>}
   <div className="coord-actions">{actions.map(([s,label])=><button key={s} type="button" onClick={()=>navigate(s)}><Icon kind={s}/><span>{label}</span></button>)}</div>
   </section>{views.overview}</>:<>
   {(mode!=='entree'||!registered)&&<header className="coord-subhead"><p className="eyebrow">{sections[mode]} · Espace coordination</p><h1>{title}</h1></header>}

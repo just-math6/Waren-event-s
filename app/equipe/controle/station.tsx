@@ -19,7 +19,7 @@ export function Icon({name}:{name:Glyph}){
 function brand(demo:boolean){return <header className="gate-mast"><div className="gate-brand"><span aria-hidden="true">W</span><div><b>Waren</b> Events</div></div><span className="gate-pill">{demo?'Démo contrôle':'Espace contrôle'}</span></header>}
 export function Reader({football,demo=false,reference,category='VIP'}:{football:boolean;demo?:boolean;reference?:string;category?:string}){
  const art=footballTypes.find(t=>t.name===category)??footballTypes[1];
- return <div className="gate-reader"><p>{demo?'Lecteur de démonstration':'Lecteur de billets'}</p><div className="gate-frame" aria-hidden="true">{football?<FootballTicket art={art} qr="/maquettes/football/illustration-qr.svg"/>:<Icon name="scan"/>}</div><div>{reference?'Référence : '+reference:'Placez le QR dans le cadre de la caméra'}</div></div>
+ return <div className="gate-reader"><p>{demo?'Lecteur de démonstration':'Lecteur de billets'}</p><div className="gate-frame" aria-hidden="true">{football?<FootballTicket usage="decoration" art={art} qr="/maquettes/football/illustration-qr.svg"/>:<Icon name="scan"/>}</div><div>{reference?'Référence : '+reference:'Placez le QR dans le cadre de la caméra'}</div></div>
 }
 function Signal({tone}:{tone:string}){return <span className="gate-sign" aria-hidden="true">{tone==='ok'?'✓':tone==='warn'?'!':'×'}</span>}
 function Verdict({row,compact=false}:{row:Entry;compact?:boolean}){
