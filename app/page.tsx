@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: { absolute: 'Waren Events · Accueil de la billetterie' },
-  description: 'Accédez à votre espace équipe ou administrateur. Si vous avez reçu un billet sur WhatsApp, ouvrez le lien du message pour le consulter.',
+  description: 'Accédez à votre espace de vente, de contrôle, de coordination ou d’administration sur Waren Events.',
 };
 
 export default function Home() {
@@ -16,6 +16,5 @@ export default function Home() {
       <Link className="block rounded-lg border border-white/60 px-4 py-3 text-center font-semibold" href="/equipe?espace=coordination">Coordinateur</Link>
     </header>
     <Link className="block rounded-lg border border-gray-300 px-4 py-3 text-center text-sm font-medium" href="/admin">Accès administrateur</Link>
-    <p className="text-sm leading-relaxed text-gray-600">Vous avez reçu un billet sur WhatsApp ? Ouvrez directement le lien de votre billet. Aucun compte n’est nécessaire.</p>
   </div>;
 }
