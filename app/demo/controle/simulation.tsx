@@ -19,8 +19,8 @@ export default function Demo(){
   if(x&&!first)mark(prev=>({...prev,[x.code]:when}));
   setLast(row);setData(prev=>({...prev,used:prev.used+(row.outcome==='accepted'?1:0),history:[row,...prev.history].slice(0,40)}));
  }
- return <Station demo event={event} data={data} busy={false} roleLabel="Contrôleuse" result={last} manual={<Manual demo busy={false} onScan={simulate}/>}
- camera={<div className="gate-form"><Reader football demo reference={selected} category={example.type}/>
+ return <Station demo event={event} data={data} busy={false} result={last} manual={<Manual demo busy={false} onScan={simulate}/>}
+ camera={<div className="gate-form"><Reader football reference={selected} category={example.type}/>
  <label>Billet à présenter<select value={selected} onChange={e=>select(e.target.value)}>{examples.map(x=><option key={x.code} value={x.code}>{x.code==='INCONNU'?'Billet inconnu':x.channel+' '+x.type+' · '+x.code+(x.code==='P-101'?' (déjà utilisé)':'')}</option>)}</select></label>
  <button className="gate-primary" type="button" onClick={()=>void simulate(selected)}><Icon name="scan"/>Simuler le scan</button></div>}/>;
 }

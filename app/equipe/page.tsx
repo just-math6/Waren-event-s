@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 
 
 type Assignment = {id:string; title:string; starts_at:string; role:'coordination'|'vente'|'entree'|'terrain'};
-export default async function Page(){
+export default async function Page({searchParams}:{searchParams:Promise<{espace?:string}>}){
  const db=await createClient(),{data:{user}}=await db.auth.getUser();
- if(!user)return <div className="space-y-4"><h1 className="text-2xl font-semibold">Connexion équipe</h1><Access/></div>;
+ if(!user)return <div className="space-y-4"><h1 className="text-2xl font-semibold">Connexion équipe</h1><Access initialSpace={(await searchParams).espace==='coordination'?'coordination':'terrain'}/></div>;
  const [global,scoped]=await Promise.all([db.rpc('waren_role'),db.rpc('waren_my_assignments')]);
  const assignments:Assignment[]=scoped.data??[];
  const globalDesk=['vente','admin','entree'].includes(global.data);

@@ -16,10 +16,10 @@ export function Icon({name}:{name:Glyph}){
  {name==='scan'?<path d="M3 8V5a2 2 0 0 1 2-2h3m8 0h3a2 2 0 0 1 2 2v3m0 8v3a2 2 0 0 1-2 2h-3m-8 0H5a2 2 0 0 1-2-2v-3m4-4h10"/>:name==='keyboard'?<><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M7 13h.01M11 13h.01M15 13h.01M7 16h10"/></>:<><path d="M3 3v5h5"/><path d="M3.7 7.7a9 9 0 1 1-1 7M12 7v5l4 2"/></>}
  </svg>
 }
-function brand(demo:boolean){return <header className="gate-mast"><div className="gate-brand"><span aria-hidden="true">W</span><div><b>Waren</b> Events</div></div><span className="gate-pill">{demo?'Démo contrôle':'Espace contrôle'}</span></header>}
-export function Reader({football,demo=false,reference,category='VIP'}:{football:boolean;demo?:boolean;reference?:string;category?:string}){
+function brand(demo:boolean){return <header className="gate-mast"><div className="gate-brand"><span aria-hidden="true">W</span><div><b>Waren</b> Events</div></div>{demo&&<span className="gate-pill">Démo</span>}</header>}
+export function Reader({football,reference,category='VIP'}:{football:boolean;reference?:string;category?:string}){
  const art=footballTypes.find(t=>t.name===category)??footballTypes[1];
- return <div className="gate-reader"><p>{demo?'Lecteur de démonstration':'Lecteur de billets'}</p><div className="gate-frame" aria-hidden="true">{football?<FootballTicket usage="decoration" art={art} qr="/maquettes/football/illustration-qr.svg"/>:<Icon name="scan"/>}</div><div>{reference?'Référence : '+reference:'Placez le QR dans le cadre de la caméra'}</div></div>
+ return <div className="gate-reader"><div className="gate-frame" aria-hidden="true">{football?<FootballTicket usage="decoration" loading="eager" art={art} qr="/maquettes/football/illustration-qr.svg"/>:<Icon name="scan"/>}</div><div>{reference?'Référence : '+reference:'Placez le QR dans le cadre de la caméra'}</div></div>
 }
 function Signal({tone}:{tone:string}){return <span className="gate-sign" aria-hidden="true">{tone==='ok'?'✓':tone==='warn'?'!':'×'}</span>}
 function Verdict({row,compact=false}:{row:Entry;compact?:boolean}){
@@ -29,16 +29,16 @@ function Verdict({row,compact=false}:{row:Entry;compact?:boolean}){
  {row.at&&<p>{row.outcome==='utilise'?'Premier passage : ':'Entrée à '}{hour(row.at)}{row.checked_by?' · '+row.checked_by:''}</p>}
  </div>
 }
-type Props={event:GateEvent;data:StationData|null;demo?:boolean;embedded?:boolean;roleLabel?:string;busy:boolean;offline?:boolean;error?:string;result:Entry|null;camera:ReactNode;manual:ReactNode;onHistory?:()=>void};
-export default function Station({event,data,demo=false,embedded=false,roleLabel='Contrôle entrée',busy,offline=false,error,result,camera,manual,onHistory}:Props){
+type Props={event:GateEvent;data:StationData|null;demo?:boolean;embedded?:boolean;busy:boolean;offline?:boolean;error?:string;result:Entry|null;camera:ReactNode;manual:ReactNode;onHistory?:()=>void};
+export default function Station({event,data,demo=false,embedded=false,busy,offline=false,error,result,camera,manual,onHistory}:Props){
  const [tab,tabTo]=useState<'scan'|'history'>('scan'),[method,methodTo]=useState<'qr'|'manual'>('qr');
  const [dismissed,dismiss]=useState<string|null>(null);
  useEffect(()=>{if(!result)return;const t=setTimeout(()=>dismiss(result.id),result.outcome==='accepted'?8000:15000);return()=>clearTimeout(t)},[result]);
  return <section className={'gate-shell'+(embedded?' gate-embedded':'')} aria-label="Poste de contrôle des entrées">
  {!embedded&&brand(demo)}
  <div className="gate-content">
- <div className="gate-person"><div><i className={offline?'down':''} aria-hidden="true"/><b>{data?.operator||'Équipe'}</b> · {roleLabel}</div><span>Poste d’entrée</span></div>
- <section className="gate-event"><div><p>Contrôle entrée</p><h1>{event.title}</h1><span>{dateFmt.format(new Date(event.starts_at))} · {demo?'Porte principale':'Poste d’entrée'}</span></div>
+ <div className="gate-person"><div><i className={offline?'down':''} aria-hidden="true"/><b>{data?.operator||'Équipe'}</b></div></div>
+ <section className="gate-event"><div><p>Contrôle des entrées</p><h1>{event.title}</h1><span>{dateFmt.format(new Date(event.starts_at))}{demo?' · Porte principale':''}</span></div>
  <div className="gate-meter"><span>Billets scannés</span><strong>{data?data.used:'—'} <small>/ {data?data.sold:'—'}</small></strong><progress aria-label="Billets scannés sur billets vendus" value={data?.used??0} max={Math.max(1,data?.sold??0)}/></div></section>
  {offline&&<p className="gate-error" role="status">Hors connexion. Attendez la confirmation du serveur avant d’autoriser une entrée.</p>}
  {error&&<p className="gate-error" role="alert">{error}</p>}

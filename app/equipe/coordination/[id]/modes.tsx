@@ -25,12 +25,12 @@ export default function Modes({id,title,starts,name,...views}:Props){
  function navigate(s:Section){if(busy||locked)return;select(s);setError('');if(s==='overview'||s==='cash')router.refresh()}
  const field=mode==='vente'||mode==='entree';
  return <div className="team-ui coordination">
-  <header className="coord-mast"><div className="coord-brand"><span className="coord-monogram" aria-hidden="true">W</span><span><b>Waren</b> Events</span></div><span className="coord-private">{mode==='entree'?'Espace contrôle':'Espace privé'}</span></header>
+  <header className="coord-mast"><div className="coord-brand"><span className="coord-monogram" aria-hidden="true">W</span><span><b>Waren</b> Events</span></div><span className="coord-private">Espace privé</span></header>
   <nav className="coord-nav" aria-label="Navigation de l’événement">{(Object.entries(sections) as [Section,string][]).map(([s,label])=><button key={s} type="button" aria-current={mode===s?'page':undefined} disabled={locked||busy} onClick={()=>navigate(s)}>{label}</button>)}</nav>
   <div className="coord-content">
   {mode==='overview'?<><section className={'coord-hero'+(football?' with-ticket':'')} aria-labelledby="event-heading">
   <div className="coord-hero-copy"><p className="coord-kicker">{football?'Football · Jour de match':'Événement · Coordination'}</p><h1 id="event-heading">{title}</h1><p className="coord-date">{date}<span aria-hidden="true"> · </span>Espace coordination</p></div>
-  {football&&<div className="coord-art" aria-hidden="true"><FootballTicket usage="decoration" art={footballTypes[1]} qr="/maquettes/football/illustration-qr.svg"/></div>}
+  {football&&<div className="coord-art" aria-hidden="true"><FootballTicket usage="decoration" loading="eager" art={footballTypes[1]} qr="/maquettes/football/illustration-qr.svg"/></div>}
   <div className="coord-actions">{actions.map(([s,label])=><button key={s} type="button" onClick={()=>navigate(s)}><Icon kind={s}/><span>{label}</span></button>)}</div>
   </section>{views.overview}</>:<>
   {(mode!=='entree'||!registered)&&<header className="coord-subhead"><p className="eyebrow">{sections[mode]} · Espace coordination</p><h1>{title}</h1></header>}

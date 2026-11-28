@@ -24,6 +24,6 @@ export default function LiveGate({event,embedded,onLock}:{event:GateEvent;embedd
   }catch{if(alive.current)setFault('Contrôle non confirmé. Vérifiez l’historique avant de laisser entrer la personne.')}
   finally{onLock(false);guard.current=false;if(alive.current){setBusy(false);void load()}}
  }
- return <Station event={event} data={data} embedded={embedded} roleLabel={embedded?'Coordination':'Contrôle entrée'} busy={busy} offline={offline} result={result} error={fault||(unavailable?'Compteur et historique indisponibles. Vérifiez la connexion et votre accès.':'')} onHistory={load}
+ return <Station event={event} data={data} embedded={embedded} busy={busy} offline={offline} result={result} error={fault||(unavailable?'Compteur et historique indisponibles. Vérifiez la connexion et votre accès.':'')} onHistory={load}
  camera={offline?<Reader football={isFootball(event)}/>:<Camera disabled={busy} onScan={scan} idle={<Reader football={isFootball(event)}/>}/>} manual={<Manual busy={busy||offline} onScan={scan}/>}/>;
 }

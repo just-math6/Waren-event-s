@@ -13,7 +13,7 @@ export default function Team({event,members}:{event:string;members:Member[]}){
   try{const r=await teamAccount(event,f);note(r);if(r.ok&&f.get('action')==='create')form.reset()}catch{note({ok:false,message:'Connexion interrompue. Réessayez.'})}finally{wait(false)}
  }
  return <section className="ui-panel space-y-4"><p className="eyebrow">Coordination / Équipe</p><h2 className="font-semibold">Mon équipe</h2>
- <p className="text-sm text-gray-500">Créez le compte, puis communiquez le nom et le mot de passe à la personne. Aucun courriel de confirmation.</p>
+ <p className="text-sm text-gray-500">Transmettez à chaque personne son nom de connexion et son mot de passe.</p>
  {members.map(m=><div key={m.id+m.role} className="space-y-2 border-t border-gray-200 py-3"><p className="font-medium">{m.name}</p><p className="text-sm text-gray-500">{m.role==='inactif'?'Accès retiré':m.role==='vente'?'Vendeur':m.role==='terrain'?'Vendeur et contrôleur':'Contrôleur'}</p>
  <details><summary className="text-sm underline">Fiche du membre</summary><div className="space-y-3 pt-3">
  {m.role==='inactif'?<form onSubmit={submit}><input type="hidden" name="user" value={m.id}/><input type="hidden" name="editRights" value="1"/><Permissions/><button disabled={busy} className="button">Réactiver</button></form>:<><form onSubmit={submit}><input type="hidden" name="user" value={m.id}/><input type="hidden" name="editRights" value="1"/><Permissions role={m.role}/><button disabled={busy} className="button">Enregistrer les accès</button></form>

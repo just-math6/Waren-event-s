@@ -5,6 +5,10 @@ export const footballTypes = [
   { name: 'VVIP', price: 2000, src: 'vvip', w: 1080, h: 392, x: 832, y: 94, size: 204 },
 ] as const;
 export type FootballArt = (typeof footballTypes)[number];
+// Screen copies of the three masters, exported at 800 × 290. Print uses the originals.
+export function footballPreview(art: FootballArt) {
+  return { src: '/maquettes/football/'+art.src+'.webp', width: 800, height: 290 };
+}
 export function findFootballArt(name:string,price:number) {
   return footballTypes.find(a => a.name.toLowerCase() === name.trim().toLowerCase() && a.price === price);
 }

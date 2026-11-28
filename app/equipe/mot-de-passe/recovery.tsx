@@ -26,7 +26,7 @@ export default function Recovery(){
        const result=code?await auth.exchangeCodeForSession(code):await auth.setSession({access_token:hash.get('access_token')??'',refresh_token:hash.get('refresh_token')??''});
        if(result.error)throw result.error;
        setReady(true);
-     }catch{setMsg('Ce lien ne peut plus être utilisé. Demandez un nouveau courriel ci-dessous.');}
+     }catch{setMsg('Ce lien ne peut plus être utilisé. Demandez un nouveau lien.');}
    }
    void resume();
  },[]);
@@ -48,16 +48,19 @@ export default function Recovery(){
    finally{setBusy(false);}
  }
  async function send(e:FormEvent<HTMLFormElement>){
-   e.preventDefault();if(busy)return;setBusy(true);
+   e.preventDefault();if(busy)return;setBusy(true);setMsg('');
    try{
      const r=await createClient().auth.resetPasswordForEmail(email.trim(),{redirectTo:authReturnUrl(location.origin,'/equipe/mot-de-passe')});
-     setMsg(r.error?'Envoi impossible pour le moment. Réessayez dans quelques minutes.':'Si le compte existe, un courriel vient d’être envoyé. Copiez le lien du bouton, puis utilisez le formulaire.');
+     setMsg(r.error?'Envoi impossible pour le moment. Réessayez dans quelques minutes.':'Si le compte existe, un lien vient d’être envoyé. Ouvrez-le pour choisir votre nouveau mot de passe.');
    }catch{setMsg('Connexion impossible. Réessayez.');}finally{setBusy(false);}
  }
- return <><form onSubmit={save} className="card space-y-4">
- {!ready&&<label className="block">Lien de réinitialisation<p className="my-2 text-sm text-gray-500">Dans le nouveau courriel, faites un appui long ou un clic droit sur « Reset Password », puis choisissez « Copier le lien » sans l’ouvrir.</p><input name="link" type="url" required className="input" autoComplete="off" placeholder="Collez le lien ici"/></label>}
- <label className="block">Nouveau mot de passe<input name="password" type="password" minLength={10} required autoComplete="new-password" className="input"/><span className="text-sm text-gray-500">10 caractères minimum.</span></label>
- <button className="button" disabled={busy}>Enregistrer et ouvrir mon espace</button></form>
- {msg&&<p role="status" className="text-sm">{msg}</p>}
- {!ready&&<details className="card"><summary>Recevoir un nouveau courriel</summary><form onSubmit={send} className="mt-3 space-y-3"><label>Courriel<input required type="email" autoComplete="email" className="input" value={email} onChange={e=>setEmail(e.target.value)}/></label><button className="button" disabled={busy}>Envoyer le courriel</button></form></details>}</>;
+ const passwordForm=<form onSubmit={save} className="space-y-4">
+   {!ready&&<label className="block">Lien de réinitialisation<input name="link" type="url" required className="input" autoComplete="off" placeholder="Collez le lien reçu"/></label>}
+   <label className="block">Nouveau mot de passe<input name="password" type="password" minLength={10} required autoComplete="new-password" className="input"/><span className="text-sm text-gray-500">10 caractères minimum.</span></label>
+   <button className="button" disabled={busy}>Enregistrer mon mot de passe</button>
+ </form>;
+ return <>{ready?<div className="card">{passwordForm}</div>:<>
+   <form onSubmit={send} className="card space-y-4"><label className="block">Adresse e-mail du coordinateur<input required type="email" autoComplete="email" className="input" value={email} onChange={e=>setEmail(e.target.value)}/></label><button className="button" disabled={busy}>Recevoir un lien</button></form>
+   <details className="text-sm"><summary className="cursor-pointer underline">J’ai déjà un lien à coller</summary><div className="card mt-2">{passwordForm}</div></details>
+ </>}{msg&&<p role="status" className="text-sm">{msg}</p>}</>;
 }
