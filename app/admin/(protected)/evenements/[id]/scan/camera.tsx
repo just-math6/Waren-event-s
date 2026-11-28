@@ -29,5 +29,5 @@ export default function Camera({ onScan, disabled, idle }: { idle?: ReactNode; o
       void started.then(() => scanner.stop()).then(() => scanner.clear()).catch(() => {});
     };
   }, [active, id]);
-  return <div className={idle?'gate-camera':'card space-y-3'}>{!active&&idle}<div id={id} className={active?"min-h-64 overflow-hidden rounded-lg":"hidden"} />{error && <p role="alert" className="text-sm text-red-600">{error}</p>}<button type="button" className={idle?'gate-primary':'button'} disabled={disabled && !active} onClick={() => { setError(''); setActive(!active); }}>{active ? 'Arrêter la caméra' : 'Démarrer la caméra'}</button></div>;
+  return <div className={idle?'gate-camera':'card space-y-3'}>{!active&&idle}<div id={id} className={active?"min-h-64 overflow-hidden rounded-lg":"hidden"} />{error && <p role="alert" className="text-sm text-red-700">{error}</p>}<button type="button" className={idle?'gate-primary':'button'} disabled={disabled && !active} onClick={() => { setError(''); setActive(!active); }}>{active ? 'Arrêter la caméra' : 'Démarrer la caméra'}</button></div>;
 }

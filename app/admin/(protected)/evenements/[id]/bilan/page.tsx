@@ -19,7 +19,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   if (!isUuid(id)) notFound();
   const client = await createClient();
   const { data: summary, error } = await client.from('event_summary').select('title,billets_vendus,billets_scannes,recettes_totales').eq('event_id', id).maybeSingle();
-  if (error) return <p role="alert" className="card text-red-600">Impossible de charger le bilan. Réessayez.</p>;
+  if (error) return <p role="alert" className="card text-red-700">Impossible de charger le bilan. Réessayez.</p>;
   if (!summary) notFound();
   let report;
   try { report = await loadReport(client, id); } catch { report = null; }
@@ -31,14 +31,14 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     <header><h1 className="text-2xl font-semibold">Bilan — {summary.title}</h1><p className="mt-2 text-sm text-gray-500">Recettes et présence hors billets annulés.</p></header>
     <dl className="grid grid-cols-2 gap-4">
       <div className="card"><dt className="text-sm text-gray-500">Recettes totales</dt><dd className="mt-2 break-words text-2xl font-semibold">{amount(Number(summary.recettes_totales))}</dd></div>
-      <div className="card"><dt className="text-sm text-gray-500">Taux de présence</dt><dd className="mt-2 text-2xl font-semibold text-green-600">{new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(rate)} %</dd><dd className="mt-1 text-sm text-gray-500">{summary.billets_scannes} / {summary.billets_vendus} billets vendus</dd></div>
+      <div className="card"><dt className="text-sm text-gray-500">Taux de présence</dt><dd className="mt-2 text-2xl font-semibold text-green-700">{new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(rate)} %</dd><dd className="mt-1 text-sm text-gray-500">{summary.billets_scannes} / {summary.billets_vendus} billets vendus</dd></div>
     </dl>
     <section className="card"><h2 className="mb-3 font-semibold">Répartition par type de billet</h2>
-      {!report ? <p role="alert" className="text-sm text-red-600">Impossible de charger la répartition. Actualisez la page.</p> : report.types.length === 0 && report.tickets.length === 0 ? <p className="text-sm text-gray-500">Aucun type de billet pour cet événement.</p> : <ul className="divide-y divide-gray-200">{typeBreakdown(report.types, report.tickets).map(row => <li key={row.id} className="flex items-center justify-between gap-4 py-4"><div className="min-w-0"><h3 className="break-words font-medium">{row.name}</h3><p className="mt-1 text-sm text-gray-500">{row.sold} vendu(s)</p></div><p className="shrink-0 font-semibold">{amount(row.cents / 100)}</p></li>)}</ul>}
+      {!report ? <p role="alert" className="text-sm text-red-700">Impossible de charger la répartition. Actualisez la page.</p> : report.types.length === 0 && report.tickets.length === 0 ? <p className="text-sm text-gray-500">Aucun type de billet pour cet événement.</p> : <ul className="divide-y divide-gray-200">{typeBreakdown(report.types, report.tickets).map(row => <li key={row.id} className="flex items-center justify-between gap-4 py-4"><div className="min-w-0"><h3 className="break-words font-medium">{row.name}</h3><p className="mt-1 text-sm text-gray-500">{row.sold} vendu(s)</p></div><p className="shrink-0 font-semibold">{amount(row.cents / 100)}</p></li>)}</ul>}
     </section>
     <section className="card">
       <h2 className="font-semibold">Ventes par vendeur</h2>
-      {!sellers ? <p role="alert" className="mt-2 text-sm text-red-600">Impossible de charger les ventes par vendeur. Actualisez la page.</p>
+      {!sellers ? <p role="alert" className="mt-2 text-sm text-red-700">Impossible de charger les ventes par vendeur. Actualisez la page.</p>
         : sellers.length === 0 ? <p className="mt-2 text-sm text-gray-500">Aucune vente pour cet événement.</p>
         : <ul className="mt-2 divide-y divide-gray-200">{sellers.map(row => <li key={JSON.stringify(row.seller)} className="py-3">
           <div className="flex items-baseline justify-between gap-3">

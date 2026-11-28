@@ -27,7 +27,7 @@ export default function LoginForm({ accessDenied }: { accessDenied: boolean }) {
   return <form onSubmit={submit} className="space-y-5" aria-busy={pending}>
     <div><label htmlFor="email" className="mb-2 block text-sm font-medium">Adresse courriel</label><input className="input" id="email" name="email" type="email" autoComplete="username" required disabled={pending} /></div>
     <div><label htmlFor="password" className="mb-2 block text-sm font-medium">Mot de passe</label><input className="input" id="password" name="password" type="password" autoComplete="current-password" required disabled={pending} /></div>
-    {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+    {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
     <button className="button" disabled={pending} type="submit">{pending ? 'Connexion en cours…' : 'Se connecter'}</button>
   </form>;
 }

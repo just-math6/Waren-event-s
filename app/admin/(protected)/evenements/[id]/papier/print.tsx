@@ -9,5 +9,5 @@ export default function Print({count,label='Ouvrir l’impression / PDF'}:{count
    await Promise.all(images.map(image=>image.decode()));
    window.print();
  } catch {setError(true)}finally {setBusy(false)}
- }}>{busy?'Préparation…':label}</button>{error&&<p role="alert" className="text-sm text-red-600">Image indisponible. Actualisez avant d’imprimer.</p>}</div>;
+ }}>{busy?'Préparation…':label}</button>{error&&<p role="alert" className="text-sm text-red-700">Image indisponible. Actualisez avant d’imprimer.</p>}</div>;
 }

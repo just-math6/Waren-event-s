@@ -20,7 +20,7 @@ export default function SignOut({ loginPath = '/admin/login', label='Mon compte'
       <summary className="cursor-pointer rounded-lg px-3 py-2 text-gray-600">{label}</summary>
       <div className="absolute right-0 z-10 mt-1 w-48 rounded-lg border border-gray-200 bg-white p-2">
         <button type="button" disabled={pending} className="w-full rounded-md px-3 py-2 text-left text-gray-700 hover:bg-gray-50" onClick={signOut}>{pending ? 'Déconnexion…' : 'Se déconnecter'}</button>
-        {error && <p role="alert" className="p-2 text-red-600">{error}</p>}
+        {error && <p role="alert" className="p-2 text-red-700">{error}</p>}
       </div>
     </details>
   </div>;

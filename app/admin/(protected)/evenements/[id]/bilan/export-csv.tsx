@@ -17,5 +17,5 @@ export default function ExportCsv({ eventId }: { eventId: string }) {
     } catch { setError('Export impossible. Vérifiez votre connexion et votre session, puis réessayez.'); }
     finally { setBusy(false); }
   }
-  return <div className="space-y-2"><button className="button" disabled={busy} onClick={() => void download()}>{busy ? 'Préparation du CSV…' : 'Exporter en CSV'}</button>{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</div>;
+  return <div className="space-y-2"><button className="button" disabled={busy} onClick={() => void download()}>{busy ? 'Préparation du CSV…' : 'Exporter en CSV'}</button>{error && <p role="alert" className="text-sm text-red-700">{error}</p>}</div>;
 }

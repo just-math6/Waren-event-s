@@ -8,12 +8,12 @@ import Camera from './camera';
 
 const time = (value?: string | null) => value ? new Date(value).toLocaleString('fr-FR') : 'heure indisponible';
 function Result({ result }: { result: ScanResult }) {
-  const color = result.outcome === 'accepted' ? 'border-green-600 text-green-600' : result.outcome === 'duplicate' ? 'border-amber-600 text-amber-600' : 'border-red-600 text-red-600';
+  const color = result.outcome === 'accepted' ? 'border-green-600 text-green-700' : result.outcome === 'duplicate' ? 'border-amber-600 text-amber-700' : 'border-red-600 text-red-700';
   return <div role="status" className={`rounded-xl border p-5 ${color}`}>
     {result.name && <p className="font-semibold">{result.name}</p>}
     <p>{result.outcome === 'accepted' ? 'Entrée autorisée' : result.outcome === 'duplicate' ? `Déjà utilisé — premier scan : ${time(result.used_at)}` : result.outcome === 'cancelled' ? 'Billet annulé — entrée refusée' : 'Billet introuvable'}</p>
     {result.outcome !== 'missing' && <p className="mt-1 break-words text-sm">Vendu par : {result.sold_by?.trim() || 'Vendeur non renseigné'}</p>}
-    {result.pending && <p className="mt-2 text-sm text-amber-600">Validation locale — en attente de synchronisation.</p>}
+    {result.pending && <p className="mt-2 text-sm text-amber-700">Validation locale — en attente de synchronisation.</p>}
   </div>;
 }
 
@@ -136,13 +136,13 @@ export default function Scanner({ eventId, adminId }: { eventId: string; adminId
   const disabled = locked || busy || !cache?.cachedAt;
   return <section className="space-y-5">
     <div className="card" aria-live="polite"><p className="text-2xl font-semibold">{cache?.cachedAt ? `${sold.filter(ticket => ticket.status === 'utilise').length} / ${sold.length}` : '— / —'} scannés</p><p className="mt-2 text-sm text-gray-500">{cache?.queue.length ?? 0} scan(s) en attente de synchronisation</p></div>
-    {message && <p role="alert" className={locked ? 'text-sm text-red-600' : 'text-sm text-amber-600'}>{message}</p>}
-    {!online && <p className="card text-sm text-amber-600">Mode hors connexion : seuls les billets déjà chargés sont vérifiables. Les scans des autres appareils et les annulations récentes peuvent manquer.</p>}
+    {message && <p role="alert" className={locked ? 'text-sm text-red-700' : 'text-sm text-amber-700'}>{message}</p>}
+    {!online && <p className="card text-sm text-amber-700">Mode hors connexion : seuls les billets déjà chargés sont vérifiables. Les scans des autres appareils et les annulations récentes peuvent manquer.</p>}
     <p className="text-sm text-gray-500">{cache?.cachedAt ? `Liste enregistrée sur cet appareil le ${time(cache.cachedAt)}.` : 'Préparation du cache hors connexion…'} Gardez cette page ouverte pendant une coupure.</p>
     <Camera onScan={scan} disabled={disabled} />
     {busy && <p role="status" className="text-sm text-gray-500">Validation du billet…</p>}
     {result && <Result result={result} />}
-    {!!cache?.conflicts.length && <div className="space-y-3"><h2 className="font-semibold text-amber-600">Conflits de synchronisation à vérifier</h2>{cache.conflicts.map(conflict => <Result key={conflict.id} result={conflict} />)}</div>}
+    {!!cache?.conflicts.length && <div className="space-y-3"><h2 className="font-semibold text-amber-700">Conflits de synchronisation à vérifier</h2>{cache.conflicts.map(conflict => <Result key={conflict.id} result={conflict} />)}</div>}
     <div className="card space-y-4"><h2 className="font-semibold">Recherche manuelle</h2><label htmlFor="scan-search" className="block text-sm text-gray-500">Nom ou téléphone</label><input className="input" id="scan-search" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Rechercher un acheteur" />
       <ul className="divide-y divide-gray-200">{matches.map(ticket => <li key={ticket.id} className="space-y-2 py-3"><p className="font-medium">{ticket.buyer_name}</p><p className="text-sm text-gray-500">{ticket.buyer_phone}{ticket.status === 'utilise' ? ` · Déjà utilisé : ${time(ticket.used_at)}` : ticket.status === 'annule' ? ' · Annulé' : ''}</p><button className="button" disabled={disabled || ticket.status !== 'valide'} onClick={() => void scan(ticket.token)}>Marquer comme utilisé</button></li>)}</ul>
       {query.trim() && !matches.length && <p className="text-sm text-gray-500">Aucun billet trouvé dans la liste chargée.</p>}

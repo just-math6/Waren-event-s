@@ -10,5 +10,5 @@ export default function Quantity({event,type,name,price,value}:{event:string;typ
  {editing&&<form className="mt-3 space-y-3" onSubmit={async e=>{e.preventDefault();if(busy)return;wait(true);note('');
  try{const n=Number(draft);const res=await createClient().rpc('waren_coord_quantity',{p_event:event,p_type:type,p_count:n});if(res.error){note(res.error.message.includes('couvrir')?'La quantité doit couvrir les billets déjà vendus ou préparés.':'Quantité non enregistrée. Vérifiez votre accès et réessayez.');return}save(n);edit(false);note('Quantité enregistrée.');router.refresh();}
  catch{note('Connexion interrompue. Réessayez.')}finally{wait(false)}}}><label>Nouvelle quantité · {name}<input className="input" type="number" min="1" max="2147483647" step="1" required disabled={busy} value={draft} onChange={e=>change(e.target.value)}/></label><button className="button" disabled={busy||Number(draft)===saved}>{busy?'Enregistrement…':'Enregistrer'}</button><button className="underline text-sm" type="button" disabled={busy} onClick={()=>{edit(false);note('')}}>Annuler</button></form>}
- {msg&&<p role="status" className={'mt-2 text-sm '+(editing?'text-red-600':'text-green-600')}>{msg}</p>}</div>
+ {msg&&<p role="status" className={'mt-2 text-sm '+(editing?'text-red-700':'text-green-700')}>{msg}</p>}</div>
 }

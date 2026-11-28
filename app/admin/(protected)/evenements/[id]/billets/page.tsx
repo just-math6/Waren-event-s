@@ -20,7 +20,7 @@ export default async function TicketsPage({ params }: { params: Promise<{ id: st
   if (!isUuid(id)) notFound();
   const client = await createClient();
   const { data: event, error } = await client.from('events').select('title,starts_at').eq('id', id).maybeSingle();
-  if (error) return <p role="alert" className="card text-red-600">Impossible de charger l’événement. Réessayez.</p>;
+  if (error) return <p role="alert" className="card text-red-700">Impossible de charger l’événement. Réessayez.</p>;
   if (!event) notFound();
   let tickets;
   try { tickets = await loadAttendance(client, id); } catch { tickets = null; }

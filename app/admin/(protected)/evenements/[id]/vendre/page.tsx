@@ -20,7 +20,7 @@ export default async function SellPage({ params }: { params: Promise<{ id: strin
   if (!isUuid(id)) notFound();
   const supabase = await createClient();
   const { data: event, error } = await supabase.from('events').select('id,title,starts_at').eq('id', id).maybeSingle();
-  if (error) return <p role="alert" className="card text-red-600">Impossible de charger l’événement. Réessayez.</p>;
+  if (error) return <p role="alert" className="card text-red-700">Impossible de charger l’événement. Réessayez.</p>;
   if (!event) notFound();
   const types: TicketType[] = [];
   let failed = false;
@@ -37,5 +37,5 @@ export default async function SellPage({ params }: { params: Promise<{ id: strin
     types.push(...counted.filter((type): type is TicketType => type !== null));
     if (failed || data.length < 500) break;
   }
-  return <div className="space-y-6"><Link href="/admin/evenements" className="text-sm text-gray-500 underline">Retour aux événements</Link><header><h1 className="text-2xl font-semibold">{event.title}</h1><p className="mt-2 text-sm text-gray-500"><EventDate value={event.starts_at} /></p></header>{failed ? <p role="alert" className="card text-red-600">Impossible de charger les disponibilités. Actualisez la page.</p> : types.length ? <SaleForm eventTitle={event.title} eventId={id} types={types} sellers={sellerNames(user.email)} initialToken={randomBytes(32).toString('hex')} /> : <p className="card text-sm text-amber-600">Aucun type de billet pour cet événement.</p>}</div>;
+  return <div className="space-y-6"><Link href="/admin/evenements" className="text-sm text-gray-500 underline">Retour aux événements</Link><header><h1 className="text-2xl font-semibold">{event.title}</h1><p className="mt-2 text-sm text-gray-500"><EventDate value={event.starts_at} /></p></header>{failed ? <p role="alert" className="card text-red-700">Impossible de charger les disponibilités. Actualisez la page.</p> : types.length ? <SaleForm eventTitle={event.title} eventId={id} types={types} sellers={sellerNames(user.email)} initialToken={randomBytes(32).toString('hex')} /> : <p className="card text-sm text-amber-700">Aucun type de billet pour cet événement.</p>}</div>;
 }

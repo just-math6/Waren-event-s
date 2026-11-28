@@ -31,7 +31,7 @@ export default function NewEvent() {
   }
   return <div className="space-y-4">
     <button type="button" className="button" aria-expanded={open} aria-controls="new-event-form" disabled={pending} onClick={() => { setOpen(!open); setSuccess(false); setError(''); }}>{open ? 'Fermer le formulaire' : 'Nouvel événement'}</button>
-    {success && <p role="status" className="text-sm text-green-600">Événement créé avec ses types de billets.</p>}
+    {success && <p role="status" className="text-sm text-green-700">Événement créé avec ses types de billets.</p>}
     {open && <form id="new-event-form" onSubmit={submit} className="card space-y-5" aria-busy={pending}>
       <h2 className="text-lg font-semibold">Nouvel événement</h2>
       <fieldset disabled={pending} className="space-y-5">
@@ -44,10 +44,10 @@ export default function NewEvent() {
           <div><label className="mb-2 block text-sm" htmlFor={`name-${id}`}>Nom</label><input className="input" id={`name-${id}`} name={`name-${id}`} required maxLength={100} placeholder="Ex. Standard, VIP" /></div>
           <div><label className="mb-2 block text-sm" htmlFor={`price-${id}`}>Prix</label><input className="input" id={`price-${id}`} name={`price-${id}`} inputMode="decimal" required pattern="[0-9]{1,8}([.,][0-9]{1,2})?" placeholder="0,00" /></div>
           <div><label className="mb-2 block text-sm" htmlFor={`quantity-${id}`}>Quantité totale</label><input className="input" id={`quantity-${id}`} name={`quantity-${id}`} type="number" min="1" max="2147483647" step="1" required /></div>
-          {rows.length > 1 && <button className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-red-600" type="button" onClick={() => setRows(rows.filter(row => row !== id))}>Supprimer ce type</button>}
+          {rows.length > 1 && <button className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-red-700" type="button" onClick={() => setRows(rows.filter(row => row !== id))}>Supprimer ce type</button>}
         </fieldset>)}
         <button className="button" type="button" disabled={rows.length >= 50} onClick={() => setRows([...rows, nextId.current++])}>Ajouter un type de billet</button>
-        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         <button className="button" type="submit">{pending ? 'Enregistrement…' : 'Créer l’événement'}</button>
       </fieldset>
     </form>}

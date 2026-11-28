@@ -42,6 +42,6 @@ export default function TicketCard({ ticket, qrCode }: { ticket: PublicTicket; q
       <div className="border-t border-dashed border-gray-300" />
     </article>
     <button type="button" className="button" onClick={download} disabled={pending}>{pending ? 'Téléchargement…' : 'Télécharger le billet'}</button>
-    {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+    {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
   </div>;
 }
